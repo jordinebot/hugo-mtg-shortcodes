@@ -1,0 +1,44 @@
+{{- $name := .Get "name" | default (.Get 0) -}}
+{{- $set := .Get "set" | default (.Get 1) -}}
+{{- if and $name (in $name "|") -}}
+  {{- $parts := split $name "|" -}}
+  {{- $name = index $parts 0 | strings.TrimSpace -}}
+  {{- $set = index $parts 1 | strings.TrimSpace -}}
+{{- end -}}
+{{- if not $name -}}{{- errorf "card shortcode: missing card name (page %q)" .Page.RelPermalink -}}{{- end -}}
+
+{{- $data := partial "scryfall-card.html" (dict "name" $name "set" $set) -}}
+
+{{- if not $data -}}
+  {{- warnf "card shortcode: failed to fetch %q after retries" $name -}}
+  <span class="card-error">[card lookup failed: {{ $name }}]</span>
+{{- else -}}
+  {{- $isDFC := and $data.card_faces (not $data.image_uris) -}}
+  {{- if $isDFC -}}
+    {{- $front := index $data.card_faces 0 -}}
+    {{- $back := index $data.card_faces 1 -}}
+    <figure class="card-preview card-preview--flippable js-flippable">
+      <div class="card-preview__stage">
+        <div class="card-preview__faces">
+          <img class="card-preview__face card-preview__face--front" src="{{ $front.image_uris.normal }}" alt="{{ $front.name }}" loading="lazy">
+          <img class="card-preview__face card-preview__face--back" src="{{ $back.image_uris.normal }}" alt="{{ $back.name }}" loading="lazy">
+        </div>
+        <button type="button" class="card-preview__flip js-flip-toggle" aria-label="Flip card" aria-pressed="false">↻</button>
+      </div>
+      <figcaption>
+        <a href="{{ $data.scryfall_uri }}" rel="noopener" class="card-preview__name">{{ $data.name }}</a>
+        <span class="card-preview__type">{{ $data.type_line }}</span>
+      </figcaption>
+    </figure>
+  {{- else -}}
+    <figure class="card-preview">
+      <a href="{{ $data.scryfall_uri }}" rel="noopener">
+        <img src="{{ $data.image_uris.normal }}" alt="{{ $data.name }}" loading="lazy">
+      </a>
+      <figcaption>
+        <a href="{{ $data.scryfall_uri }}" rel="noopener" class="card-preview__name">{{ $data.name }}</a>
+        <span class="card-preview__type">{{ $data.type_line }}</span>
+      </figcaption>
+    </figure>
+  {{- end -}}
+{{- end -}}

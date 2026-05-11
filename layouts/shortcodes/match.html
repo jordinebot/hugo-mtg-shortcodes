@@ -1,0 +1,40 @@
+{{- $round := .Get "round" -}}
+{{- $result := .Get "result" -}}
+{{- $p1 := .Get "player1" | default "Me" -}}
+{{- $p2 := .Get "player2" | default "Opponent" -}}
+{{- $deck1 := .Get "deck1" -}}
+{{- $deck1Url := .Get "deck1Url" -}}
+{{- $deck2 := .Get "deck2" -}}
+{{- $deck2Url := .Get "deck2Url" -}}
+
+{{- $outcome := "draw" -}}
+{{- if and $result (in $result "-") -}}
+  {{- $parts := split $result "-" -}}
+  {{- $score1 := index $parts 0 | strings.TrimSpace | int -}}
+  {{- $score2 := index $parts 1 | strings.TrimSpace | int -}}
+  {{- if gt $score1 $score2 }}{{ $outcome = "win" }}{{ end -}}
+  {{- if lt $score1 $score2 }}{{ $outcome = "loss" }}{{ end -}}
+{{- end -}}
+
+<aside class="match" id="round-{{ $round }}">
+  <header class="match__head">
+    <h3 class="match__round">Round {{ $round }}</h3>
+    <span class="match__result match__result--{{ $outcome }}">
+      {{- if eq $outcome "win" }}✅{{ else if eq $outcome "loss" }}❌{{ else }}➖{{ end }} {{ $result -}}
+    </span>
+  </header>
+  <div class="match__sides">
+    <div class="match__side match__side--player1">
+      <span class="match__player">{{ $p1 }}</span>
+      {{- with $deck1 -}}
+        <span class="match__deck">{{ if $deck1Url }}<a href="{{ $deck1Url }}">{{ . }}</a>{{ else }}{{ . }}{{ end }}</span>
+      {{- end -}}
+    </div>
+    <div class="match__side match__side--player2">
+      <span class="match__player">{{ $p2 }}</span>
+      {{- with $deck2 -}}
+        <span class="match__deck">{{ if $deck2Url }}<a href="{{ $deck2Url }}">{{ . }}</a>{{ else }}{{ . }}{{ end }}</span>
+      {{- end -}}
+    </div>
+  </div>
+</aside>

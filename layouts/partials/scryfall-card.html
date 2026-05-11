@@ -1,0 +1,41 @@
+{{- /* Fetch a Scryfall card by fuzzy name, retrying transient failures.
+
+       Hugo's resources.GetRemote caches results (success and failure) per
+       cache key. Retrying with the same key within a single build returns
+       the cached failure and never hits the network again — so we vary
+       the key per attempt to force a fresh fetch on each retry.
+
+       A side effect is that successful responses are cached under
+       attempt-N keys, so subsequent builds enjoy warm cache hits at the
+       same attempt level that previously succeeded.
+
+       Args (dict):
+         name  — card name (required)
+         set   — set code (optional)
+         tries — max attempts (optional, default 4)
+
+       Returns: unmarshalled card data, or false on failure. */ -}}
+
+{{- $name := .name -}}
+{{- $set := .set -}}
+{{- $tries := .tries | default 8 -}}
+{{- $url := printf "https://api.scryfall.com/cards/named?fuzzy=%s" ($name | urlquery) -}}
+{{- if $set -}}{{- $url = printf "%s&set=%s" $url ($set | urlquery) -}}{{- end -}}
+{{- $headers := dict
+  "User-Agent" "hugo-mtg-shortcodes (+https://github.com/jordinebot/hugo-mtg-shortcodes)"
+  "Accept" "application/json"
+-}}
+
+{{- $data := false -}}
+{{- range $i, $_ := seq 0 (sub $tries 1) -}}
+  {{- if not $data -}}
+    {{- $opts := dict "headers" $headers "key" (printf "%s#attempt-%d" $url $i) -}}
+    {{- with try (resources.GetRemote $url $opts) -}}
+      {{- with .Value -}}
+        {{- $data = . | transform.Unmarshal -}}
+      {{- end -}}
+    {{- end -}}
+  {{- end -}}
+{{- end -}}
+
+{{- return $data -}}

@@ -1,0 +1,30 @@
+{{- $items := slice -}}
+{{- range $i := seq 0 4 -}}
+  {{- with $.Get $i -}}
+    {{- $parts := split . "|" -}}
+    {{- $name := index $parts 0 | strings.TrimSpace -}}
+    {{- $set := "" -}}
+    {{- if gt (len $parts) 1 -}}{{- $set = index $parts 1 | strings.TrimSpace -}}{{- end -}}
+    {{- $items = $items | append (dict "name" $name "set" $set) -}}
+  {{- end -}}
+{{- end -}}
+{{- if not $items -}}{{- errorf "combo shortcode: at least one card name required (page %q)" $.Page.RelPermalink -}}{{- end -}}
+<div class="combo combo--{{ len $items }}">
+  {{- range $i, $item := $items -}}
+    {{- $data := partial "scryfall-card.html" (dict "name" $item.name "set" $item.set) -}}
+    {{- if not $data -}}
+      {{- warnf "combo shortcode: failed to fetch %q after retries" $item.name -}}
+      <span class="card-error">[card lookup failed: {{ $item.name }}]</span>
+    {{- else -}}
+      {{- $img := "" -}}
+      {{- if $data.image_uris -}}
+        {{- $img = $data.image_uris.normal -}}
+      {{- else if $data.card_faces -}}
+        {{- $img = (index $data.card_faces 0).image_uris.normal -}}
+      {{- end -}}
+      <a class="combo__card combo__card--{{ add $i 1 }}" href="{{ $data.scryfall_uri }}" rel="noopener" title="{{ $data.name }}">
+        <img src="{{ $img }}" alt="{{ $data.name }}" loading="lazy">
+      </a>
+    {{- end -}}
+  {{- end -}}
+</div>

@@ -1,0 +1,9 @@
+{{- $cost := . -}}
+{{- $symbols := findRE `\{[^}]+\}` $cost -}}
+{{- if not $symbols -}}{{ $symbols = slice (printf "{%s}" $cost) }}{{- end -}}
+{{- range $symbols -}}
+  {{- $sym := lower (trim . "{}") -}}
+  {{- $sym = replace $sym "/" "" -}}
+  {{- if eq $sym "t" -}}{{ $sym = "tap" }}{{- else if eq $sym "q" -}}{{ $sym = "untap" }}{{- end -}}
+  <i class="ms ms-{{ $sym }} ms-cost ms-shadow"></i>
+{{- end -}}

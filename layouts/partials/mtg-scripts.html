@@ -1,0 +1,8 @@
+{{- /* Loads the flip-toggle JS used by `card` and `cardname` shortcodes
+       for double-faced cards. Themes should include this partial near
+       the end of <body>:  {{ partial "mtg-scripts.html" . }}
+*/ -}}
+{{ with resources.Get "js/mtg-flip.js" }}
+  {{ $js := . | js.Build (dict "minify" true) | fingerprint }}
+  <script src="{{ $js.RelPermalink }}" integrity="{{ $js.Data.Integrity }}" defer></script>
+{{ end }}

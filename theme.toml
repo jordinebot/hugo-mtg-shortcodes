@@ -1,0 +1,12 @@
+name = "Hugo MTG Shortcodes"
+license = "MIT"
+licenselink = "https://github.com/jordinebot/hugo-mtg-shortcodes/blob/main/LICENSE"
+description = "Magic: The Gathering shortcodes for Hugo themes — card hover-previews, mana symbols, combos, and tournament-match callouts."
+homepage = "https://github.com/jordinebot/hugo-mtg-shortcodes"
+tags = ["mtg", "shortcodes", "scryfall"]
+features = ["shortcodes"]
+min_version = "0.128.0"
+
+[author]
+  name = "Jordi Nebot"
+  homepage = "https://github.com/jordinebot"

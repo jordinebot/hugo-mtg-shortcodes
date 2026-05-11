@@ -1,0 +1,5 @@
+// Aggregate import for the MTG shortcodes module — themes only need to
+// @import 'mtg-shortcodes'; in their main.scss to pull in everything.
+@import 'cards';
+@import 'mana';
+@import 'match';
