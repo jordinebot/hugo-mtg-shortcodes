@@ -29,7 +29,7 @@ function shiftPreviewHorizontally(cardname) {
   cardname.style.removeProperty('--preview-shift');
 
   const r = preview.getBoundingClientRect();
-  const vw = window.innerWidth;
+  const vw = document.documentElement.clientWidth;
 
   let shift = 0;
   if (r.right > vw - PREVIEW_MARGIN) {
@@ -49,7 +49,7 @@ function flipPreviewIfNeeded(cardname) {
 
   preview.classList.remove('cardname__preview--above');
   const r = preview.getBoundingClientRect();
-  const vh = window.innerHeight;
+  const vh = document.documentElement.clientHeight;
 
   if (r.bottom > vh - PREVIEW_MARGIN) {
     preview.classList.add('cardname__preview--above');

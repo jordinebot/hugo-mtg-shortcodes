@@ -197,10 +197,18 @@
   border-radius: 3px;
 }
 
-// Inline card name with hover preview
+// Inline card name with hover preview.
+// Note: `white-space: nowrap` keeps short names together as one unit, but
+// double-faced names ("Tamiyo, Inquisitive Student // Tamiyo, Seasoned
+// Scholar") are long enough to overflow narrow viewports. Use the
+// flippable variant override below to allow wrapping for those.
 .cardname {
   position: relative;
   white-space: nowrap;
+}
+
+.cardname--flippable {
+  white-space: normal;
 }
 
 .cardname__link {
