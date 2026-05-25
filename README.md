@@ -135,10 +135,11 @@ Draft-summary callout, designed for limited reports:
   date="2026-05-25"
   winrate="57"
   result="4-3"
+  seventeenlands="3eea6d72600948eab9cf91dc09c2088e"
 */>}}
 ```
 
-`index="1"` renders as "Draft 1"; passing `index="Draft 1"` is also fine. `colors` accepts brace-delimited mana symbols like `{R}{W}` or compact colour strings like `RW`. `winrate` can include `%` or omit it. `result`, `matches`, and `record` are accepted aliases for the match record.
+`index="1"` renders as "Draft 1"; passing `index="Draft 1"` is also fine. `colors` accepts brace-delimited mana symbols like `{R}{W}` or compact colour strings like `RW`. `winrate` can include `%` or omit it. `result`, `matches`, and `record` are accepted aliases for the match record. `seventeenlands` accepts either the 17Lands event ID or a full 17Lands URL and renders external Draft, Picks, Pool, Deck, and Details links. `17lands`, `17landsId`, and `seventeenlandsId` are also accepted aliases.
 
 ## Theming
 

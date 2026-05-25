@@ -3,6 +3,7 @@
 {{- $date := .Get "date" -}}
 {{- $winrate := .Get "winrate" -}}
 {{- $result := .Get "result" | default (.Get "matches") | default (.Get "record") -}}
+{{- $seventeenLands := .Get "17lands" | default (.Get "17landsId") | default (.Get "seventeenlands") | default (.Get "seventeenlandsId") -}}
 
 {{- $title := "Draft" -}}
 {{- with $index -}}
@@ -28,6 +29,14 @@
   {{- $winrateValue := replace . "%" "" | strings.TrimSpace | float -}}
   {{- if gt $winrateValue 50.0 }}{{ $winrateOutcome = "positive" }}{{ end -}}
   {{- if lt $winrateValue 50.0 }}{{ $winrateOutcome = "negative" }}{{ end -}}
+{{- end -}}
+
+{{- $seventeenLandsId := "" -}}
+{{- with $seventeenLands -}}
+  {{- $matches := findRE `[0-9a-fA-F]{32}` . -}}
+  {{- if gt (len $matches) 0 -}}
+    {{- $seventeenLandsId = lower (index $matches 0) -}}
+  {{- end -}}
 {{- end -}}
 
 <aside class="draft"{{ with $index }} id="draft-{{ . | urlize }}"{{ end }}>
@@ -65,4 +74,14 @@
       </div>
     {{- end -}}
   </dl>
+  {{- with $seventeenLandsId -}}
+    {{- $base := "https://www.17lands.com" -}}
+    <nav class="draft__links" aria-label="17Lands draft links">
+      <a href="{{ $base }}/draft/{{ . }}" target="_blank" rel="noopener noreferrer">Draft</a>
+      <a href="{{ $base }}/picks/{{ . }}" target="_blank" rel="noopener noreferrer">Picks</a>
+      <a href="{{ $base }}/pool/{{ . }}" target="_blank" rel="noopener noreferrer">Pool</a>
+      <a href="{{ $base }}/deck/{{ . }}/0" target="_blank" rel="noopener noreferrer">Deck</a>
+      <a href="{{ $base }}/details/{{ . }}" target="_blank" rel="noopener noreferrer">Details</a>
+    </nav>
+  {{- end -}}
 </aside>
