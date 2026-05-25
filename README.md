@@ -1,6 +1,6 @@
 # hugo-mtg-shortcodes
 
-A standalone Hugo Module that ships **Magic: The Gathering shortcodes** — inline mana symbols, hover-preview card references, fanned-hand "combo" displays, and tournament-match callouts — backed by the [Scryfall](https://scryfall.com/) API and the [Mana icon font](https://mana.andrewgioia.com/).
+A standalone Hugo Module that ships **Magic: The Gathering shortcodes** — inline mana symbols, hover-preview card references, fanned-hand "combo" displays, tournament-match callouts, and draft-summary callouts — backed by the [Scryfall](https://scryfall.com/) API and the [Mana icon font](https://mana.andrewgioia.com/).
 
 > **Note:** this module has been 100% vibe-coded — built iteratively through conversation with an AI assistant rather than from a formal spec. It builds, the shortcodes work, and the demos render — but expect rough edges, incomplete corners, and choices that haven't been stress-tested. Bug reports and PRs welcome.
 
@@ -11,6 +11,7 @@ A standalone Hugo Module that ships **Magic: The Gathering shortcodes** — inli
 - **`cardname`** — inline card name with a 240px hover-preview image. Smart positioning keeps the preview inside the viewport even when the link sits near an edge.
 - **`combo`** — up to five cards arranged like a fanned hand, with a hover spread animation.
 - **`match`** — tournament-match callout with round number, both players, deck names + links, and a coloured win/loss/draw chip.
+- **`draft`** — draft-summary callout with draft index, deck colours, date, winrate, and match record.
 
 All shortcodes use the [Scryfall API](https://scryfall.com/docs/api) (via `resources.GetRemote`) and are cached at build time, so subsequent builds don't re-hit the network for cards you've already referenced.
 
@@ -61,7 +62,7 @@ Inside your theme's `main.scss`, import the shortcode styles:
 @import "mtg-shortcodes";
 ```
 
-Hugo's module mounts will make the file resolvable. This single import pulls in `_cards`, `_mana`, and `_match`.
+Hugo's module mounts will make the file resolvable. This single import pulls in `_cards`, `_mana`, `_match`, and `_draft`.
 
 ## Usage
 
@@ -122,6 +123,22 @@ Tournament-match callout, designed for round-by-round reports:
 ```
 
 The `result` is parsed; first number > second renders green ✅, second > first renders red ❌, ties render grey ➖. `player1` defaults to "Me" and `player2` to "Opponent". `deck1Url` / `deck2Url` are optional — without them the deck names render as plain text.
+
+### `draft`
+
+Draft-summary callout, designed for limited reports:
+
+```md
+{{</* draft
+  index="1"
+  colors="{R}{W}"
+  date="2026-05-25"
+  winrate="57"
+  result="4-3"
+*/>}}
+```
+
+`index="1"` renders as "Draft 1"; passing `index="Draft 1"` is also fine. `colors` accepts brace-delimited mana symbols like `{R}{W}` or compact colour strings like `RW`. `winrate` can include `%` or omit it. `result`, `matches`, and `record` are accepted aliases for the match record.
 
 ## Theming
 

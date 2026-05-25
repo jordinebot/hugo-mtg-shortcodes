@@ -1,0 +1,64 @@
+{{- $index := .Get "index" -}}
+{{- $colors := .Get "colors" -}}
+{{- $date := .Get "date" -}}
+{{- $winrate := .Get "winrate" -}}
+{{- $result := .Get "result" | default (.Get "matches") | default (.Get "record") -}}
+
+{{- $title := "Draft" -}}
+{{- with $index -}}
+  {{- $title = . -}}
+  {{- if not (in (lower .) "draft") -}}
+    {{- $title = printf "Draft %s" . -}}
+  {{- end -}}
+{{- end -}}
+
+{{- $recordOutcome := "even" -}}
+{{- if and $result (in $result "-") -}}
+  {{- $parts := split $result "-" -}}
+  {{- $wins := index $parts 0 | strings.TrimSpace | int -}}
+  {{- $losses := index $parts 1 | strings.TrimSpace | int -}}
+  {{- if gt $wins $losses }}{{ $recordOutcome = "positive" }}{{ end -}}
+  {{- if lt $wins $losses }}{{ $recordOutcome = "negative" }}{{ end -}}
+{{- end -}}
+
+{{- $winrateText := $winrate -}}
+{{- with $winrate -}}
+  {{- if not (in . "%") -}}{{ $winrateText = printf "%s%%" . }}{{- end -}}
+{{- end -}}
+
+<aside class="draft"{{ with $index }} id="draft-{{ . | urlize }}"{{ end }}>
+  <header class="draft__head">
+    <h3 class="draft__title">{{ $title }}</h3>
+    {{- with $colors -}}
+      <span class="draft__colors" aria-label="Deck colors">
+        {{- if in . "{" -}}
+          {{- partial "mana-cost.html" . -}}
+        {{- else -}}
+          {{- range findRE `[WUBRGCTQ]` (upper .) -}}
+            {{- partial "mana-cost.html" . -}}
+          {{- end -}}
+        {{- end -}}
+      </span>
+    {{- end -}}
+  </header>
+  <dl class="draft__stats">
+    {{- with $date -}}
+      <div class="draft__stat">
+        <dt>Date</dt>
+        <dd>{{ . }}</dd>
+      </div>
+    {{- end -}}
+    {{- with $winrateText -}}
+      <div class="draft__stat">
+        <dt>Winrate</dt>
+        <dd>{{ . }}</dd>
+      </div>
+    {{- end -}}
+    {{- with $result -}}
+      <div class="draft__stat">
+        <dt>Matches</dt>
+        <dd class="draft__record draft__record--{{ $recordOutcome }}">{{ . }}</dd>
+      </div>
+    {{- end -}}
+  </dl>
+</aside>
