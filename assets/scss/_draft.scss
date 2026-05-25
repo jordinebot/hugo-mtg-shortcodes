@@ -54,7 +54,8 @@
   }
 }
 
-.draft__record {
+.draft__record,
+.draft__winrate {
   &--positive { color: #2e7d32; }
   &--negative { color: #c62828; }
   &--even { color: var(--color-text-muted, currentColor); }

@@ -22,8 +22,12 @@
 {{- end -}}
 
 {{- $winrateText := $winrate -}}
+{{- $winrateOutcome := "even" -}}
 {{- with $winrate -}}
   {{- if not (in . "%") -}}{{ $winrateText = printf "%s%%" . }}{{- end -}}
+  {{- $winrateValue := replace . "%" "" | strings.TrimSpace | float -}}
+  {{- if gt $winrateValue 50.0 }}{{ $winrateOutcome = "positive" }}{{ end -}}
+  {{- if lt $winrateValue 50.0 }}{{ $winrateOutcome = "negative" }}{{ end -}}
 {{- end -}}
 
 <aside class="draft"{{ with $index }} id="draft-{{ . | urlize }}"{{ end }}>
@@ -51,7 +55,7 @@
     {{- with $winrateText -}}
       <div class="draft__stat">
         <dt>Winrate</dt>
-        <dd>{{ . }}</dd>
+        <dd class="draft__winrate draft__winrate--{{ $winrateOutcome }}">{{ . }}</dd>
       </div>
     {{- end -}}
     {{- with $result -}}
