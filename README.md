@@ -139,7 +139,7 @@ Draft-summary callout, designed for limited reports:
 */>}}
 ```
 
-`index="1"` renders as "Draft 1"; passing `index="Draft 1"` is also fine. `colors` accepts brace-delimited mana symbols like `{R}{W}` or compact colour strings like `RW`. `winrate` can include `%` or omit it. `result`, `matches`, and `record` are accepted aliases for the match record. `seventeenlands` accepts either the 17Lands event ID or a full 17Lands URL and renders external Draft, Picks, Pool, Deck, and Details links. `17lands`, `17landsId`, and `seventeenlandsId` are also accepted aliases.
+`index="1"` renders as "Draft 1"; passing `index="Draft 1"` is also fine. `colors` accepts brace-delimited mana symbols like `{R}{W}` or compact colour strings like `RW`. `winrate` can include `%` or omit it. `result`, `matches`, and `record` are accepted aliases for the match record. `seventeenlands` accepts either the 17Lands event ID or a full 17Lands URL and renders external Draft, Picks, Pool, Deck, and Details links. `17lands`, `17landsId`, and `seventeenlandsId` are also accepted aliases. The visible labels use Hugo i18n keys prefixed with `mtg_draft_`, so sites can override them in their own `i18n` files.
 
 ## Theming
 

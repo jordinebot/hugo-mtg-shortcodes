@@ -27,6 +27,7 @@
   align-items: center;
   gap: 0.2rem;
   white-space: nowrap;
+  font-size: 1.25rem;
 }
 
 .draft__stats {
@@ -64,12 +65,13 @@
 .draft__links {
   display: flex;
   flex-wrap: wrap;
+  align-items: baseline;
   gap: 0.35rem 0.75rem;
   margin-top: 0.85rem;
   padding-top: 0.75rem;
-  border-top: 1px solid var(--color-border, rgba(0, 0, 0, 0.12));
   font-size: 0.9em;
   font-weight: 600;
+  justify-content: space-between;
 
   a {
     color: var(--color-accent, currentColor);
@@ -81,6 +83,11 @@
       color: var(--color-accent-hover, var(--color-accent, currentColor));
     }
   }
+}
+
+.draft__links-label {
+  color: var(--color-text-muted, currentColor);
+  font-weight: 600;
 }
 
 @media (max-width: 480px) {

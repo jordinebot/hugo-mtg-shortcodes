@@ -4,6 +4,16 @@
 {{- $winrate := .Get "winrate" -}}
 {{- $result := .Get "result" | default (.Get "matches") | default (.Get "record") -}}
 {{- $seventeenLands := .Get "17lands" | default (.Get "17landsId") | default (.Get "seventeenlands") | default (.Get "seventeenlandsId") -}}
+{{- $labelDate := i18n "mtg_draft_date" | default "Date" -}}
+{{- $labelWinrate := i18n "mtg_draft_winrate" | default "Winrate" -}}
+{{- $labelMatches := i18n "mtg_draft_matches" | default "Matches" -}}
+{{- $labelMoreInfo := i18n "mtg_draft_more_information" | default "More information:" -}}
+{{- $labelMoreInfoAria := i18n "mtg_draft_more_information_aria" | default "17Lands draft links" -}}
+{{- $labelDraft := i18n "mtg_draft_link_draft" | default "Draft" -}}
+{{- $labelPicks := i18n "mtg_draft_link_picks" | default "Picks" -}}
+{{- $labelPool := i18n "mtg_draft_link_pool" | default "Pool" -}}
+{{- $labelDeck := i18n "mtg_draft_link_deck" | default "Deck" -}}
+{{- $labelDetails := i18n "mtg_draft_link_details" | default "Details" -}}
 
 {{- $title := "Draft" -}}
 {{- with $index -}}
@@ -57,31 +67,32 @@
   <dl class="draft__stats">
     {{- with $date -}}
       <div class="draft__stat">
-        <dt>Date</dt>
+        <dt>{{ $labelDate }}</dt>
         <dd>{{ . }}</dd>
       </div>
     {{- end -}}
     {{- with $winrateText -}}
       <div class="draft__stat">
-        <dt>Winrate</dt>
+        <dt>{{ $labelWinrate }}</dt>
         <dd class="draft__winrate draft__winrate--{{ $winrateOutcome }}">{{ . }}</dd>
       </div>
     {{- end -}}
     {{- with $result -}}
       <div class="draft__stat">
-        <dt>Matches</dt>
+        <dt>{{ $labelMatches }}</dt>
         <dd class="draft__record draft__record--{{ $recordOutcome }}">{{ . }}</dd>
       </div>
     {{- end -}}
   </dl>
   {{- with $seventeenLandsId -}}
     {{- $base := "https://www.17lands.com" -}}
-    <nav class="draft__links" aria-label="17Lands draft links">
-      <a href="{{ $base }}/draft/{{ . }}" target="_blank" rel="noopener noreferrer">Draft</a>
-      <a href="{{ $base }}/picks/{{ . }}" target="_blank" rel="noopener noreferrer">Picks</a>
-      <a href="{{ $base }}/pool/{{ . }}" target="_blank" rel="noopener noreferrer">Pool</a>
-      <a href="{{ $base }}/deck/{{ . }}/0" target="_blank" rel="noopener noreferrer">Deck</a>
-      <a href="{{ $base }}/details/{{ . }}" target="_blank" rel="noopener noreferrer">Details</a>
+    <nav class="draft__links" aria-label="{{ $labelMoreInfoAria }}">
+      <span class="draft__links-label">{{ $labelMoreInfo }}</span>
+      <a href="{{ $base }}/draft/{{ . }}" target="_blank" rel="noopener noreferrer">{{ $labelDraft }}</a>
+      <a href="{{ $base }}/picks/{{ . }}" target="_blank" rel="noopener noreferrer">{{ $labelPicks }}</a>
+      <a href="{{ $base }}/pool/{{ . }}" target="_blank" rel="noopener noreferrer">{{ $labelPool }}</a>
+      <a href="{{ $base }}/deck/{{ . }}/0" target="_blank" rel="noopener noreferrer">{{ $labelDeck }}</a>
+      <a href="{{ $base }}/details/{{ . }}" target="_blank" rel="noopener noreferrer">{{ $labelDetails }}</a>
     </nav>
   {{- end -}}
 </aside>
