@@ -1,4 +1,5 @@
 {{- $index := .Get "index" -}}
+{{- $set := .Get "set" -}}
 {{- $colors := .Get "colors" -}}
 {{- $date := .Get "date" -}}
 {{- $winrate := .Get "winrate" -}}
@@ -52,6 +53,9 @@
 <aside class="draft"{{ with $index }} id="draft-{{ . | urlize }}"{{ end }}>
   <header class="draft__head">
     <h3 class="draft__title">{{ $title }}</h3>
+    {{- with $set -}}
+      <a class="draft__set" href="https://scryfall.com/sets/{{ lower . }}" target="_blank" rel="noopener noreferrer">{{ upper . }}</a>
+    {{- end -}}
     {{- with $colors -}}
       <span class="draft__colors" aria-label="Deck colors">
         {{- if in . "{" -}}
