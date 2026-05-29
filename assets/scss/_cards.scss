@@ -181,6 +181,10 @@
 .combo--5 .combo__card--5 { --rotation: 28deg;  --offset: 36px; }
 
 @media (max-width: 30rem) {
+  .combo {
+    margin-top: 5rem;
+  }
+
   .combo__card {
     width: 130px;
     margin-left: -65px;

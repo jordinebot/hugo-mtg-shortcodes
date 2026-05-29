@@ -5,10 +5,9 @@
 {{- $winrate := .Get "winrate" -}}
 {{- $result := .Get "result" | default (.Get "matches") | default (.Get "record") -}}
 {{- $seventeenLands := .Get "17lands" | default (.Get "17landsId") | default (.Get "seventeenlands") | default (.Get "seventeenlandsId") -}}
-{{- $labelDate := i18n "mtg_draft_date" | default "Date" -}}
-{{- $labelWinrate := i18n "mtg_draft_winrate" | default "Winrate" -}}
-{{- $labelMatches := i18n "mtg_draft_matches" | default "Matches" -}}
-{{- $labelMoreInfo := i18n "mtg_draft_more_information" | default "More information:" -}}
+{{- $labelWinrate := i18n "mtg_draft_winrate" | default "Win rate" -}}
+{{- $labelMatches := i18n "mtg_draft_matches" | default "Record" -}}
+{{- $labelMoreInfo := i18n "mtg_draft_more_information" | default "17lands" -}}
 {{- $labelMoreInfoAria := i18n "mtg_draft_more_information_aria" | default "17Lands draft links" -}}
 {{- $labelDraft := i18n "mtg_draft_link_draft" | default "Draft" -}}
 {{- $labelPicks := i18n "mtg_draft_link_picks" | default "Picks" -}}
@@ -50,29 +49,36 @@
   {{- end -}}
 {{- end -}}
 
-<aside class="draft"{{ with $index }} id="draft-{{ . | urlize }}"{{ end }}>
+{{- $outcome := $recordOutcome -}}
+{{- if and (eq $outcome "even") (ne $winrateOutcome "even") -}}
+  {{- $outcome = $winrateOutcome -}}
+{{- end -}}
+
+<aside class="draft draft--{{ $outcome }}"{{ with $index }} id="draft-{{ . | urlize }}"{{ end }}>
   <header class="draft__head">
     <h3 class="draft__title">{{ $title }}</h3>
-    {{- with $set -}}
-      <a class="draft__set" href="https://scryfall.com/sets/{{ lower . }}" target="_blank" rel="noopener noreferrer">{{ upper . }}</a>
-    {{- end -}}
-    {{- with $colors -}}
-      <span class="draft__colors" aria-label="Deck colors">
-        {{- if in . "{" -}}
-          {{- partial "mana-cost.html" . -}}
-        {{- else -}}
-          {{- range findRE `[WUBRGCTQ]` (upper .) -}}
+    <div class="draft__meta">
+      {{- with $set -}}
+        <a class="draft__set" href="https://scryfall.com/sets/{{ lower . }}" target="_blank" rel="noopener noreferrer">{{ upper . }}</a>
+      {{- end -}}
+      {{- with $colors -}}
+        <span class="draft__colors" aria-label="Deck colors">
+          {{- if in . "{" -}}
             {{- partial "mana-cost.html" . -}}
+          {{- else -}}
+            {{- range findRE `[WUBRGCTQ]` (upper .) -}}
+              {{- partial "mana-cost.html" . -}}
+            {{- end -}}
           {{- end -}}
-        {{- end -}}
-      </span>
-    {{- end -}}
+        </span>
+      {{- end -}}
+    </div>
   </header>
   <dl class="draft__stats">
-    {{- with $date -}}
+    {{- with $result -}}
       <div class="draft__stat">
-        <dt>{{ $labelDate }}</dt>
-        <dd>{{ . }}</dd>
+        <dt>{{ $labelMatches }}</dt>
+        <dd class="draft__record draft__record--{{ $recordOutcome }}">{{ . }}</dd>
       </div>
     {{- end -}}
     {{- with $winrateText -}}
@@ -81,20 +87,12 @@
         <dd class="draft__winrate draft__winrate--{{ $winrateOutcome }}">{{ . }}</dd>
       </div>
     {{- end -}}
-    {{- with $result -}}
-      <div class="draft__stat">
-        <dt>{{ $labelMatches }}</dt>
-        <dd class="draft__record draft__record--{{ $recordOutcome }}">{{ . }}</dd>
-      </div>
-    {{- end -}}
   </dl>
   {{- with $seventeenLandsId -}}
     {{- $base := "https://www.17lands.com" -}}
     <nav class="draft__links" aria-label="{{ $labelMoreInfoAria }}">
-      <span class="draft__links-label">{{ $labelMoreInfo }}</span>
       <a href="{{ $base }}/draft/{{ . }}" target="_blank" rel="noopener noreferrer">{{ $labelDraft }}</a>
       <a href="{{ $base }}/picks/{{ . }}" target="_blank" rel="noopener noreferrer">{{ $labelPicks }}</a>
-      <a href="{{ $base }}/pool/{{ . }}" target="_blank" rel="noopener noreferrer">{{ $labelPool }}</a>
       <a href="{{ $base }}/deck/{{ . }}/0" target="_blank" rel="noopener noreferrer">{{ $labelDeck }}</a>
       <a href="{{ $base }}/details/{{ . }}" target="_blank" rel="noopener noreferrer">{{ $labelDetails }}</a>
     </nav>
