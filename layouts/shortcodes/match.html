@@ -20,7 +20,7 @@
   <header class="match__head">
     <h3 class="match__round">Round {{ $round }}</h3>
     <span class="match__result match__result--{{ $outcome }}">
-      {{- if eq $outcome "win" }}✅{{ else if eq $outcome "loss" }}❌{{ else }}➖{{ end }} {{ $result -}}
+      {{- $result -}}
     </span>
   </header>
   <div class="match__sides">
