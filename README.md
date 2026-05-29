@@ -11,7 +11,7 @@ A standalone Hugo Module that ships **Magic: The Gathering shortcodes** — inli
 - **`cardname`** — inline card name with a 240px hover-preview image. Smart positioning keeps the preview inside the viewport even when the link sits near an edge.
 - **`combo`** — up to five cards arranged like a fanned hand, with a hover spread animation.
 - **`match`** — tournament-match callout with round number, both players, deck names + links, and a coloured win/loss/draw chip.
-- **`draft`** — draft-summary callout with draft index, deck colours, date, winrate, and match record.
+- **`draft`** — draft-summary callout with draft index, set code (linked to Scryfall), deck colours, winrate, and match record.
 
 All shortcodes use the [Scryfall API](https://scryfall.com/docs/api) (via `resources.GetRemote`) and are cached at build time, so subsequent builds don't re-hit the network for cards you've already referenced.
 
@@ -131,15 +131,15 @@ Draft-summary callout, designed for limited reports:
 ```md
 {{</* draft
   index="1"
+  set="MKM"
   colors="{R}{W}"
-  date="2026-05-25"
   winrate="57"
   result="4-3"
   seventeenlands="3eea6d72600948eab9cf91dc09c2088e"
 */>}}
 ```
 
-`index="1"` renders as "Draft 1"; passing `index="Draft 1"` is also fine. `colors` accepts brace-delimited mana symbols like `{R}{W}` or compact colour strings like `RW`. `winrate` can include `%` or omit it. `result`, `matches`, and `record` are accepted aliases for the match record. `seventeenlands` accepts either the 17Lands event ID or a full 17Lands URL and renders external Draft, Picks, Pool, Deck, and Details links. `17lands`, `17landsId`, and `seventeenlandsId` are also accepted aliases. The visible labels use Hugo i18n keys prefixed with `mtg_draft_`, so sites can override them in their own `i18n` files.
+`index="1"` renders as "Draft 1"; passing `index="Draft 1"` is also fine. `set` is the MTG set code (e.g. `SOS`, `MKM`) — it renders as a badge in the header linking to the set's page on Scryfall. `colors` accepts brace-delimited mana symbols like `{R}{W}` or compact colour strings like `RW`. `winrate` can include `%` or omit it. `result`, `matches`, and `record` are accepted aliases for the match record. `seventeenlands` accepts either the 17Lands event ID or a full 17Lands URL and renders external Draft, Picks, Pool, Deck, and Details links. `17lands`, `17landsId`, and `seventeenlandsId` are also accepted aliases. The visible labels use Hugo i18n keys prefixed with `mtg_draft_`, so sites can override them in their own `i18n` files.
 
 ## Theming
 
