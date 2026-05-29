@@ -121,4 +121,18 @@
     grid-template-columns: 1fr;
     gap: 0.65rem;
   }
+
+  .draft__links {
+    justify-content: flex-start;
+    gap: 0.35rem 0;
+
+    a {
+      flex: 1;
+      text-align: center;
+    }
+  }
+
+  .draft__links-label {
+    flex-basis: 100%;
+  }
 }
