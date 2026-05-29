@@ -55,23 +55,21 @@
 
 <aside class="draft draft--{{ $outcome }}"{{ with $index }} id="draft-{{ . | urlize }}"{{ end }}>
   <header class="draft__head">
+    {{- with $set -}}
+      <a class="draft__set" href="https://scryfall.com/sets/{{ lower . }}" target="_blank" rel="noopener noreferrer">{{ upper . }}</a>
+    {{- end -}}
     <h3 class="draft__title">{{ $title }}</h3>
-    <div class="draft__meta">
-      {{- with $set -}}
-        <a class="draft__set" href="https://scryfall.com/sets/{{ lower . }}" target="_blank" rel="noopener noreferrer">{{ upper . }}</a>
-      {{- end -}}
-      {{- with $colors -}}
-        <span class="draft__colors" aria-label="Deck colors">
-          {{- if in . "{" -}}
+    {{- with $colors -}}
+      <span class="draft__colors" aria-label="Deck colors">
+        {{- if in . "{" -}}
+          {{- partial "mana-cost.html" . -}}
+        {{- else -}}
+          {{- range findRE `[WUBRGCTQ]` (upper .) -}}
             {{- partial "mana-cost.html" . -}}
-          {{- else -}}
-            {{- range findRE `[WUBRGCTQ]` (upper .) -}}
-              {{- partial "mana-cost.html" . -}}
-            {{- end -}}
           {{- end -}}
-        </span>
-      {{- end -}}
-    </div>
+        {{- end -}}
+      </span>
+    {{- end -}}
   </header>
   <dl class="draft__stats">
     {{- with $result -}}
