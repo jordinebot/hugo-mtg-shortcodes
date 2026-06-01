@@ -1,0 +1,31 @@
+{{- $set   := .Get "set" -}}
+{{- $level := .Get "level" | default (.Get 0) | int -}}
+{{- $max   := .Get "max"   | default 90 | int -}}
+{{- $pass  := eq (.Get "pass") "true" -}}
+
+{{- $pct := 0.0 -}}
+{{- if gt $max 0 -}}
+  {{- $pct = printf "%.1f" (mul (div (float $level) (float $max)) 100) -}}
+{{- end -}}
+
+{{- $labelTitle := i18n "mtg_mastery_title" | default "Set Mastery" -}}
+{{- $labelPass  := i18n "mtg_mastery_pass"  | default "Mastery Pass" -}}
+{{- $labelFree  := i18n "mtg_mastery_free"  | default "Free Track" -}}
+
+<div class="mastery">
+  <header class="mastery__head">
+    {{- with $set -}}
+      <a class="mastery__set" href="https://scryfall.com/sets/{{ lower . }}" target="_blank" rel="noopener noreferrer">{{ upper . }}</a>
+    {{- end -}}
+    <span class="mastery__title">{{ $labelTitle }}</span>
+    <span class="mastery__pass mastery__pass--{{ if $pass }}owned{{ else }}free{{ end }}">
+      {{- if $pass }}{{ $labelPass }}{{ else }}{{ $labelFree }}{{ end -}}
+    </span>
+  </header>
+  <div class="mastery__progress">
+    <div class="mastery__bar-track">
+      <div class="mastery__bar-fill" style="width:{{ $pct }}%"></div>
+    </div>
+    <span class="mastery__levels">{{ $level }}<span aria-hidden="true"> / </span><span class="mastery__max">{{ $max }}</span></span>
+  </div>
+</div>

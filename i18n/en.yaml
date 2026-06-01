@@ -8,3 +8,7 @@ mtg_draft_link_picks: "Picks"
 mtg_draft_link_pool: "Pool"
 mtg_draft_link_deck: "Deck"
 mtg_draft_link_details: "Matches"
+
+mtg_mastery_title: "Set Mastery"
+mtg_mastery_pass: "Mastery Pass"
+mtg_mastery_free: "Free Track"

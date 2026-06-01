@@ -8,3 +8,7 @@ mtg_draft_link_picks: "Selecciones"
 mtg_draft_link_pool: "Pool"
 mtg_draft_link_deck: "Mazo"
 mtg_draft_link_details: "Partidas"
+
+mtg_mastery_title: "Maestria del Set"
+mtg_mastery_pass: "Pase de Maestría"
+mtg_mastery_free: "Pista Gratuita"
