@@ -1,0 +1,181 @@
+.season {
+  margin: 2rem 0 1.5rem;
+  border: 1px solid var(--color-border, rgba(0, 0, 0, 0.12));
+  border-radius: 0.5rem;
+  overflow: hidden;
+}
+
+.season__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  padding: 0.65rem 1rem;
+  border-bottom: 1px solid var(--color-border, rgba(0, 0, 0, 0.12));
+}
+
+.season__month {
+  font-family: var(--font-display, inherit);
+  font-size: 1.05rem;
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+.season__spending {
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  padding: 0.15em 0.5em;
+  border-radius: 0.25em;
+  white-space: nowrap;
+  flex-shrink: 0;
+  background: var(--color-text, #18181b);
+  color: var(--color-bg, #ffffff);
+
+  &--f2p {
+    background: var(--color-border, rgba(0, 0, 0, 0.12));
+    color: var(--color-text-muted, currentColor);
+  }
+}
+
+// ── Ranks ─────────────────────────────────────────────────────────────────────
+
+.season__ranks {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  border-bottom: 1px solid var(--color-border, rgba(0, 0, 0, 0.12));
+}
+
+.season__rank {
+  padding: 0.6rem 1rem;
+
+  & + & {
+    border-left: 1px solid var(--color-border, rgba(0, 0, 0, 0.12));
+  }
+}
+
+.season__rank-label {
+  display: block;
+  font-size: 0.68rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--color-text-muted, currentColor);
+  margin-bottom: 0.25rem;
+}
+
+.season__rank-track {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  flex-wrap: wrap;
+}
+
+.season__rank-value {
+  font-size: 0.85rem;
+  font-weight: 600;
+
+  &--end {
+    font-weight: 700;
+    font-size: 0.95rem;
+  }
+}
+
+.season__rank-arrow {
+  color: var(--color-text-muted, currentColor);
+  font-size: 0.8rem;
+}
+
+// ── Resources ─────────────────────────────────────────────────────────────────
+
+.season__resources {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+}
+
+.season__resource {
+  padding: 0.75rem 1rem;
+
+  & + & {
+    border-left: 1px solid var(--color-border, rgba(0, 0, 0, 0.12));
+  }
+}
+
+.season__resource-head {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.68rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--color-text-muted, currentColor);
+  margin-bottom: 0.5rem;
+}
+
+.season__resource-icon {
+  height: 2.6em;
+  width: auto;
+}
+
+.season__resource-body {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+
+.season__res-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 0.5rem;
+
+  &--balance {
+    margin-top: 0.35rem;
+    padding-top: 0.35rem;
+    border-top: 1px solid var(--color-border, rgba(0, 0, 0, 0.12));
+  }
+}
+
+.season__res-label {
+  font-size: 0.75rem;
+  color: var(--color-text-muted, currentColor);
+}
+
+.season__res-value {
+  font-variant-numeric: tabular-nums;
+  font-size: 0.85rem;
+  font-weight: 600;
+  text-align: right;
+  white-space: nowrap;
+
+  &--pos { color: #2e7d32; }
+  &--neg { color: #c62828; }
+
+  &--lg {
+    font-size: 1.1rem;
+    font-weight: 700;
+  }
+}
+
+// ── Mobile ────────────────────────────────────────────────────────────────────
+
+@media (max-width: 30rem) {
+  .season__ranks {
+    grid-template-columns: 1fr;
+
+    .season__rank + .season__rank {
+      border-left: none;
+      border-top: 1px solid var(--color-border, rgba(0, 0, 0, 0.12));
+    }
+  }
+
+  .season__resources {
+    grid-template-columns: 1fr;
+
+    .season__resource + .season__resource {
+      border-left: none;
+      border-top: 1px solid var(--color-border, rgba(0, 0, 0, 0.12));
+    }
+  }
+}
