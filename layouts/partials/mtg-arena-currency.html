@@ -1,0 +1,3 @@
+{{- $n    := .n -}}
+{{- $sign := cond (lt $n 0) "negative" "positive" -}}
+<span class="arena-cur arena-cur--{{ $sign }}"><img class="arena-cur__icon" src="/arena/{{ .icon }}.webp" alt="{{ .alt }}"><span class="arena-cur__amount">{{ $n }}</span></span>

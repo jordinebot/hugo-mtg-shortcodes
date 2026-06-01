@@ -1,0 +1,20 @@
+.arena-cur {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.2em;
+  white-space: nowrap;
+  vertical-align: middle;
+
+  &--negative { color: #c62828; }
+}
+
+.arena-cur__icon {
+  height: 1.1em;
+  width: auto;
+}
+
+.arena-cur__amount {
+  font-variant-numeric: tabular-nums;
+  font-weight: 600;
+  line-height: 1;
+}
