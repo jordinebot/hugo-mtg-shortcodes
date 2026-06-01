@@ -12,12 +12,14 @@
 {{- $gemsBought := .Get "gems-bought" | default 0 | int -}}
 {{- $gemsSpent  := .Get "gems-spent"  | default 0 | int -}}
 {{- $gemsBalance := sub (add (add $gemsStart $gemsEarned) $gemsBought) $gemsSpent -}}
+{{- $gemsNet     := sub (add $gemsEarned $gemsBought) $gemsSpent -}}
 
 {{- $tokensStart  := .Get "tokens-start"  | default 0 | int -}}
 {{- $tokensEarned := .Get "tokens-earned" | default 0 | int -}}
 {{- $tokensBought := .Get "tokens-bought" | default 0 | int -}}
 {{- $tokensSpent  := .Get "tokens-spent"  | default 0 | int -}}
 {{- $tokensBalance := sub (add (add $tokensStart $tokensEarned) $tokensBought) $tokensSpent -}}
+{{- $tokensNet     := sub (add $tokensEarned $tokensBought) $tokensSpent -}}
 
 {{- $hasConstructed := and $constructedStart $constructedEnd -}}
 {{- $hasLimited     := and $limitedStart $limitedEnd -}}
@@ -29,6 +31,7 @@
 {{- $labelBought      := i18n "mtg_season_bought"      | default "Bought" -}}
 {{- $labelSpent       := i18n "mtg_season_spent"       | default "Spent" -}}
 {{- $labelBalance     := i18n "mtg_season_balance"     | default "Balance" -}}
+{{- $labelNet         := i18n "mtg_season_net"         | default "Net" -}}
 {{- $labelGems        := i18n "mtg_season_gems"        | default "Gems" -}}
 {{- $labelTokens      := i18n "mtg_season_tokens"      | default "Draft Tokens" -}}
 
@@ -99,6 +102,10 @@
           <span class="season__res-label">{{ $labelBalance }}</span>
           <span class="season__res-value season__res-value--lg{{ if gt $gemsBalance $gemsStart }} season__res-value--pos{{ else if lt $gemsBalance $gemsStart }} season__res-value--neg{{ end }}">{{ $gemsBalance }}</span>
         </div>
+        <div class="season__res-row">
+          <span class="season__res-label">{{ $labelNet }}</span>
+          <span class="season__res-value{{ if gt $gemsNet 0 }} season__res-value--pos{{ else if lt $gemsNet 0 }} season__res-value--neg{{ end }}">{{ if gt $gemsNet 0 }}+{{ end }}{{ $gemsNet }}</span>
+        </div>
       </div>
     </div>
 
@@ -133,6 +140,10 @@
         <div class="season__res-row season__res-row--balance">
           <span class="season__res-label">{{ $labelBalance }}</span>
           <span class="season__res-value season__res-value--lg{{ if gt $tokensBalance $tokensStart }} season__res-value--pos{{ else if lt $tokensBalance $tokensStart }} season__res-value--neg{{ end }}">{{ $tokensBalance }}</span>
+        </div>
+        <div class="season__res-row">
+          <span class="season__res-label">{{ $labelNet }}</span>
+          <span class="season__res-value{{ if gt $tokensNet 0 }} season__res-value--pos{{ else if lt $tokensNet 0 }} season__res-value--neg{{ end }}">{{ if gt $tokensNet 0 }}+{{ end }}{{ $tokensNet }}</span>
         </div>
       </div>
     </div>

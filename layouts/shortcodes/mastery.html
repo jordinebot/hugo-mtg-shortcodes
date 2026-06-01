@@ -1,6 +1,6 @@
 {{- $set   := .Get "set" -}}
 {{- $level := .Get "level" | default (.Get 0) | int -}}
-{{- $max   := .Get "max"   | default 90 | int -}}
+{{- $max   := .Get "max"   | default 60 | int -}}
 {{- $pass  := eq (.Get "pass") "true" -}}
 
 {{- $pct := 0.0 -}}
