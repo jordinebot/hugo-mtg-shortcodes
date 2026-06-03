@@ -1,5 +1,6 @@
 {{- $month    := .Get "month" -}}
 {{- $spending := .Get "spending" -}}
+{{- $ongoing  := eq (.Get "ongoing") "true" -}}
 {{- $labelF2P := i18n "mtg_season_f2p" | default "F2P" -}}
 
 {{- $constructedStart := .Get "constructed-start" -}}
@@ -38,7 +39,14 @@
 
 <div class="season">
   <header class="season__head">
+    {{- if $ongoing -}}
+    <div class="season__head-title">
+      <span class="mtg-ongoing" aria-hidden="true"></span>
+      <span class="season__month">{{ $month }}</span>
+    </div>
+    {{- else -}}
     <span class="season__month">{{ $month }}</span>
+    {{- end -}}
     <span class="season__spending{{ if not $spending }} season__spending--f2p{{ end }}">
       {{- if $spending }}{{ $spending }}{{ else }}{{ $labelF2P }}{{ end -}}
     </span>

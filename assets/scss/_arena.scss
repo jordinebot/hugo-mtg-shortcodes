@@ -1,3 +1,18 @@
+@keyframes mtg-ongoing-pulse {
+  0%, 100% { transform: scale(1);    opacity: 1;   }
+  50%       { transform: scale(1.45); opacity: 0.4; }
+}
+
+.mtg-ongoing {
+  display: inline-block;
+  width: 0.45rem;
+  height: 0.45rem;
+  border-radius: 50%;
+  background: var(--color-accent, #4f46e5);
+  flex-shrink: 0;
+  animation: mtg-ongoing-pulse 2s ease-in-out infinite;
+}
+
 .arena-cur {
   display: inline-flex;
   align-items: center;

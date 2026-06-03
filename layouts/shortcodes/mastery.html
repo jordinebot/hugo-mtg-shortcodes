@@ -1,7 +1,8 @@
-{{- $set   := .Get "set" -}}
-{{- $level := .Get "level" | default (.Get 0) | int -}}
-{{- $max   := .Get "max"   | default 60 | int -}}
-{{- $pass  := eq (.Get "pass") "true" -}}
+{{- $set     := .Get "set" -}}
+{{- $level   := .Get "level" | default (.Get 0) | int -}}
+{{- $max     := .Get "max"   | default 60 | int -}}
+{{- $pass    := eq (.Get "pass") "true" -}}
+{{- $ongoing := eq (.Get "ongoing") "true" -}}
 
 {{- $pct := 0.0 -}}
 {{- if gt $max 0 -}}
@@ -14,6 +15,7 @@
 
 <div class="mastery">
   <header class="mastery__head">
+    {{- if $ongoing -}}<span class="mtg-ongoing" aria-hidden="true"></span>{{- end -}}
     {{- with $set -}}
       <a class="mastery__set" href="https://scryfall.com/sets/{{ lower . }}" target="_blank" rel="noopener noreferrer">{{ upper . }}</a>
     {{- end -}}
