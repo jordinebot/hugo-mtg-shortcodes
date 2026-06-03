@@ -4,8 +4,11 @@
 {{- $winrate := .Get "winrate" -}}
 {{- $result := .Get "result" | default (.Get "matches") | default (.Get "record") -}}
 {{- $seventeenLands := .Get "17lands" | default (.Get "17landsId") | default (.Get "seventeenlands") | default (.Get "seventeenlandsId") -}}
+{{- $gems := .Get "gems" -}}
+{{- $gemsInt := $gems | default 0 | int -}}
 {{- $labelWinrate := i18n "mtg_draft_winrate" | default "Win rate" -}}
 {{- $labelMatches := i18n "mtg_draft_matches" | default "Record" -}}
+{{- $labelGems    := i18n "mtg_draft_gems"    | default "Gems" -}}
 {{- $labelMoreInfo := i18n "mtg_draft_more_information" | default "17lands" -}}
 {{- $labelMoreInfoAria := i18n "mtg_draft_more_information_aria" | default "17Lands draft links" -}}
 {{- $labelDraft := i18n "mtg_draft_link_draft" | default "Draft" -}}
@@ -82,6 +85,12 @@
       <div class="draft__stat">
         <dt>{{ $labelWinrate }}</dt>
         <dd class="draft__winrate draft__winrate--{{ $winrateOutcome }}">{{ . }}</dd>
+      </div>
+    {{- end -}}
+    {{- with $gems -}}
+      <div class="draft__stat">
+        <dt>{{ $labelGems }}</dt>
+        <dd>{{ lang.FormatNumber 0 $gemsInt }}</dd>
       </div>
     {{- end -}}
   </dl>
