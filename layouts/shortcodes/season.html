@@ -21,6 +21,13 @@
 {{- $tokensBalance := sub (add (add $tokensStart $tokensEarned) $tokensBought) $tokensSpent -}}
 {{- $tokensNet     := sub (add $tokensEarned $tokensBought) $tokensSpent -}}
 
+{{- $sealedStart  := .Get "sealed-start"  | default 0 | int -}}
+{{- $sealedEarned := .Get "sealed-earned" | default 0 | int -}}
+{{- $sealedBought := .Get "sealed-bought" | default 0 | int -}}
+{{- $sealedSpent  := .Get "sealed-spent"  | default 0 | int -}}
+{{- $sealedBalance := sub (add (add $sealedStart $sealedEarned) $sealedBought) $sealedSpent -}}
+{{- $sealedNet     := sub (add $sealedEarned $sealedBought) $sealedSpent -}}
+
 {{- $hasConstructed := and $constructedStart $constructedEnd -}}
 {{- $hasLimited     := and $limitedStart $limitedEnd -}}
 
@@ -32,8 +39,9 @@
 {{- $labelSpent       := i18n "mtg_season_spent"       | default "Spent" -}}
 {{- $labelBalance     := i18n "mtg_season_balance"     | default "Balance" -}}
 {{- $labelNet         := i18n "mtg_season_net"         | default "Net" -}}
-{{- $labelGems        := i18n "mtg_season_gems"        | default "Gems" -}}
-{{- $labelTokens      := i18n "mtg_season_tokens"      | default "Draft Tokens" -}}
+{{- $labelGems        := i18n "mtg_season_gems"          | default "Gems" -}}
+{{- $labelTokens      := i18n "mtg_season_tokens"        | default "Draft Tokens" -}}
+{{- $labelSealed      := i18n "mtg_season_sealed_tokens" | default "Sealed Tokens" -}}
 
 <div class="season">
   <header class="season__head">
@@ -144,6 +152,45 @@
         <div class="season__res-row">
           <span class="season__res-label">{{ $labelNet }}</span>
           <span class="season__res-value{{ if gt $tokensNet 0 }} season__res-value--pos{{ else if lt $tokensNet 0 }} season__res-value--neg{{ end }}">{{ if gt $tokensNet 0 }}+{{ end }}{{ lang.FormatNumber 0 $tokensNet }}</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="season__resource">
+      <div class="season__resource-head">
+        <span>{{ $labelSealed }}</span>
+        <img class="season__resource-icon" src="{{ relURL "arena/sealed-token.webp" }}" alt="">
+      </div>
+      <div class="season__resource-body">
+        <div class="season__res-row">
+          <span class="season__res-label">{{ $labelStart }}</span>
+          <span class="season__res-value">{{ lang.FormatNumber 0 $sealedStart }}</span>
+        </div>
+        {{- if gt $sealedEarned 0 -}}
+        <div class="season__res-row">
+          <span class="season__res-label">{{ $labelEarned }}</span>
+          <span class="season__res-value season__res-value--pos">+{{ lang.FormatNumber 0 $sealedEarned }}</span>
+        </div>
+        {{- end -}}
+        {{- if gt $sealedBought 0 -}}
+        <div class="season__res-row">
+          <span class="season__res-label">{{ $labelBought }}</span>
+          <span class="season__res-value season__res-value--pos">+{{ lang.FormatNumber 0 $sealedBought }}</span>
+        </div>
+        {{- end -}}
+        {{- if gt $sealedSpent 0 -}}
+        <div class="season__res-row">
+          <span class="season__res-label">{{ $labelSpent }}</span>
+          <span class="season__res-value season__res-value--neg">−{{ lang.FormatNumber 0 $sealedSpent }}</span>
+        </div>
+        {{- end -}}
+        <div class="season__res-row season__res-row--balance">
+          <span class="season__res-label">{{ $labelBalance }}</span>
+          <span class="season__res-value season__res-value--lg{{ if gt $sealedBalance $sealedStart }} season__res-value--pos{{ else if lt $sealedBalance $sealedStart }} season__res-value--neg{{ end }}">{{ lang.FormatNumber 0 $sealedBalance }}</span>
+        </div>
+        <div class="season__res-row">
+          <span class="season__res-label">{{ $labelNet }}</span>
+          <span class="season__res-value{{ if gt $sealedNet 0 }} season__res-value--pos{{ else if lt $sealedNet 0 }} season__res-value--neg{{ end }}">{{ if gt $sealedNet 0 }}+{{ end }}{{ lang.FormatNumber 0 $sealedNet }}</span>
         </div>
       </div>
     </div>
