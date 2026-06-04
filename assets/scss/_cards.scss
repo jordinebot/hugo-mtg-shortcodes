@@ -107,7 +107,7 @@
 // Combo: 1-3 cards arranged like a fanned hand
 .combo {
   position: relative;
-  margin: 3rem auto 4rem;
+  margin: 2rem auto 4rem;
   width: 100%;
   max-width: 600px;
   aspect-ratio: 9 / 4;
@@ -182,7 +182,7 @@
 
 @media (max-width: 30rem) {
   .combo {
-    margin-top: 5rem;
+    margin-top: 4rem;
   }
 
   .combo__card {
