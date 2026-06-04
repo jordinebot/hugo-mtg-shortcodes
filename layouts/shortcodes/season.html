@@ -109,7 +109,7 @@
         {{- end -}}
         <div class="season__res-row season__res-row--balance">
           <span class="season__res-label">{{ $labelBalance }}</span>
-          <span class="season__res-value season__res-value--lg{{ if gt $gemsBalance $gemsStart }} season__res-value--pos{{ else if lt $gemsBalance $gemsStart }} season__res-value--neg{{ end }}">{{ lang.FormatNumber 0 $gemsBalance }}</span>
+          <span class="season__res-value season__res-value--lg{{ if gt $gemsBalance 0 }} season__res-value--pos{{ else if lt $gemsBalance 0 }} season__res-value--neg{{ end }}">{{ lang.FormatNumber 0 $gemsBalance }}</span>
         </div>
         <div class="season__res-row">
           <span class="season__res-label">{{ $labelNet }}</span>
@@ -148,7 +148,7 @@
         {{- end -}}
         <div class="season__res-row season__res-row--balance">
           <span class="season__res-label">{{ $labelBalance }}</span>
-          <span class="season__res-value season__res-value--lg{{ if gt $tokensBalance $tokensStart }} season__res-value--pos{{ else if lt $tokensBalance $tokensStart }} season__res-value--neg{{ end }}">{{ lang.FormatNumber 0 $tokensBalance }}</span>
+          <span class="season__res-value season__res-value--lg{{ if gt $tokensBalance 0 }} season__res-value--pos{{ else if lt $tokensBalance 0 }} season__res-value--neg{{ end }}">{{ lang.FormatNumber 0 $tokensBalance }}</span>
         </div>
         <div class="season__res-row">
           <span class="season__res-label">{{ $labelNet }}</span>
