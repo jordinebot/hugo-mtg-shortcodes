@@ -68,7 +68,7 @@
       {{- $isLand := in $typeLine "Land" -}}
       {{- if not $isLand -}}
         {{- $mv := .cmc | default .mana_value | default 0 | int -}}
-        {{- $mvKey := cond (gt $mv 7) "7+" (printf "%d" $mv) -}}
+        {{- $mvKey := cond (ge $mv 7) "7+" (printf "%d" $mv) -}}
         {{- $manaValues = merge $manaValues (dict $mvKey (add (index $manaValues $mvKey | default 0) $qty)) -}}
         {{- $colors := .colors | default slice -}}
         {{- if and (eq (len $colors) 0) .card_faces -}}
