@@ -161,9 +161,12 @@
 
 <aside class="deck-preview" id="deck-{{ $id | urlize }}">
   <header class="deck-preview__header">
-    <div>
+    <div class="deck-preview__identity">
       <h3 class="deck-preview__title">{{ $title }}</h3>
-      {{- with $format -}}<p class="deck-preview__format">{{ . }}</p>{{- end -}}
+      <div class="deck-preview__meta">
+        {{- with $format -}}<span class="deck-preview__format">{{ . }}</span>{{- end -}}
+        <span class="deck-preview__count" aria-label="{{ $labelCardCount }}">{{ $mainCount }} / {{ $sideboardCount }}</span>
+      </div>
     </div>
     {{- if or $sourceUrl $downloadUrl -}}
       <nav class="deck-preview__actions" aria-label="{{ $title }} links">
@@ -172,13 +175,6 @@
       </nav>
     {{- end -}}
   </header>
-
-  <div class="deck-preview__summary">
-    <span>
-      <strong>{{ $labelCardCount }}</strong>
-      <span>{{ $mainCount }} / {{ $sideboardCount }}</span>
-    </span>
-  </div>
 
   {{- if $showBreakdown -}}
     <details class="deck-preview__breakdown"{{ if $breakdownOpen }} open{{ end }}>
