@@ -90,6 +90,13 @@
   {{- end -}}
 {{- end -}}
 
+{{- $manaBuckets := slice "0" "1" "2" "3" "4" "5" "6" "7+" -}}
+{{- $manaMax := 0 -}}
+{{- range $manaBuckets -}}
+  {{- $count := index $manaValues . | default 0 -}}
+  {{- if gt $count $manaMax -}}{{- $manaMax = $count -}}{{- end -}}
+{{- end -}}
+
 {{- $colorDefs := slice
   (dict "key" "w" "label" (i18n "mtg_deck_white" | default "White") "chart" "#fffbd5")
   (dict "key" "u" "label" (i18n "mtg_deck_blue" | default "Blue") "chart" "#a8d9f0")
@@ -183,13 +190,16 @@
         <section class="deck-preview__breakdown-panel">
           <h4>{{ i18n "mtg_deck_mana_cost" | default "Mana cost" }}</h4>
           <p>{{ $labelCardCount }}</p>
-          <div class="deck-preview__mana-values">
-            {{- range slice "0" "1" "2" "3" "4" "5" "6" "7+" -}}
+          <div class="deck-preview__mana-histogram">
+            {{- range $manaBuckets -}}
               {{- $count := index $manaValues . | default 0 -}}
               {{- if gt $count 0 -}}
-                <span class="deck-preview__mana-value">
+                {{- $height := 100.0 -}}
+                {{- if gt $manaMax 0 -}}{{- $height = div (mul $count 100.0) $manaMax -}}{{- end -}}
+                <span class="deck-preview__mana-bar" style="--deck-bar: {{ $height }}%">
+                  <span class="deck-preview__mana-bar-count">{{ $count }}</span>
+                  <span class="deck-preview__mana-bar-track"><span></span></span>
                   <strong>{{ . }}</strong>
-                  <span>{{ $count }}</span>
                 </span>
               {{- end -}}
             {{- end -}}
