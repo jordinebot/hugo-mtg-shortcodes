@@ -1,0 +1,41 @@
+{{- $card := .card -}}
+{{- $showMana := .showMana -}}
+{{- $name := $card.name -}}
+{{- $qty := $card.qty | default 1 | int -}}
+{{- $set := $card.set | default "" -}}
+{{- $data := false -}}
+{{- if $name -}}
+  {{- $data = partial "scryfall-card.html" (dict "name" $name "set" $set) -}}
+{{- end -}}
+
+{{- $displayName := $name -}}
+{{- $url := $card.url | default "" -}}
+{{- $manaCost := $card.mana_cost | default "" -}}
+{{- with $data -}}
+  {{- $displayName = .name | default $displayName -}}
+  {{- $url = .scryfall_uri | default $url -}}
+  {{- if not $manaCost -}}
+    {{- if .mana_cost -}}
+      {{- $manaCost = .mana_cost -}}
+    {{- else if .card_faces -}}
+      {{- $front := index .card_faces 0 -}}
+      {{- $manaCost = $front.mana_cost | default "" -}}
+    {{- end -}}
+  {{- end -}}
+{{- else -}}
+  {{- warnf "deck shortcode: failed to fetch %q after retries" $name -}}
+{{- end -}}
+
+<li class="deck-preview__card">
+  <span class="deck-preview__qty">{{ $qty }}</span>
+  {{- if $url -}}
+    <a class="deck-preview__card-name" href="{{ $url }}" rel="noopener noreferrer">{{ $displayName }}</a>
+  {{- else -}}
+    <span class="deck-preview__card-name">{{ $displayName }}</span>
+  {{- end -}}
+  {{- if and $showMana $manaCost -}}
+    <span class="deck-preview__mana" aria-label="{{ $manaCost }}">
+      {{- partial "mana-cost.html" $manaCost -}}
+    </span>
+  {{- end -}}
+</li>

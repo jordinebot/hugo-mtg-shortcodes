@@ -10,6 +10,7 @@ A standalone Hugo Module that ships **Magic: The Gathering shortcodes** — inli
 - **`card`** — full-size card preview block (image + name + type line), fetched from Scryfall. Handles double-faced cards with a flip toggle.
 - **`cardname`** — inline card name with a 240px hover-preview image. Smart positioning keeps the preview inside the viewport even when the link sits near an edge.
 - **`combo`** — up to five cards arranged like a fanned hand, with a hover spread animation.
+- **`deck`** — full deck preview loaded from a Hugo data file, with grouped card lists, totals, mana costs, Scryfall links, and an optional breakdown.
 - **`match`** — tournament-match callout with round number, both players, deck names + links, and a coloured win/loss/draw chip.
 - **`draft`** — draft-summary callout with draft index, set code (linked to Scryfall), deck colours, winrate, and match record.
 
@@ -108,6 +109,55 @@ Up to five cards arranged like a fanned hand:
 ```
 
 Hovering a single card lifts it forward and spreads the others aside. Card count is auto-detected — the layout shifts depending on whether you pass 1, 2, 3, 4, or 5 cards.
+
+### `deck`
+
+Deck preview loaded from `data/decks/<id>.yaml`:
+
+```md
+{{</* deck "abzan-midrange" */>}}
+```
+
+The YAML file is the source of truth for structure and ordering:
+
+```yaml
+title: Ari Lax Abzan Midrange
+format: Standard
+source_url: https://www.mtggoldfish.com/deck/250294
+mainboard:
+  creatures:
+    - qty: 2
+      name: Elvish Mystic
+    - qty: 4
+      name: Sylvan Caryatid
+  planeswalkers:
+    - qty: 2
+      name: Sorin, Solemn Visitor
+  instants:
+    - qty: 4
+      name: Abzan Charm
+  sorceries:
+    - qty: 4
+      name: Thoughtseize
+  lands:
+    - qty: 3
+      name: Forest
+sideboard:
+  - qty: 1
+    name: Duneblast
+  - qty: 3
+    name: Drown in Sorrow
+```
+
+Supported `mainboard` groups are `creatures`, `planeswalkers`, `instants`, `sorceries`, `artifacts`, `enchantments`, `battles`, `lands`, and `other`. `sideboard` can be a flat list, as above, or grouped with the same keys. The shortcode derives mainboard/sideboard totals from the quantities and fetches each card from Scryfall at build time to render mana costs and card links.
+
+Optional shortcode parameters:
+
+```md
+{{</* deck "abzan-midrange" title="Custom title" showMana="false" showBreakdown="false" */>}}
+```
+
+Use `source_url` or `download_url` in the YAML file (or `sourceUrl` / `downloadUrl` shortcode params) to render action links in the deck header.
 
 ### `match`
 

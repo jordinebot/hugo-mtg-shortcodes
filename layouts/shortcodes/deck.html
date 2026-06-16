@@ -1,0 +1,126 @@
+{{- $id := .Get "id" | default (.Get 0) -}}
+{{- if not $id -}}{{- errorf "deck shortcode: missing deck id (page %q)" .Page.RelPermalink -}}{{- end -}}
+
+{{- $deck := index hugo.Data.decks $id -}}
+{{- if not $deck -}}{{- errorf "deck shortcode: could not find data/decks/%s.* (page %q)" $id .Page.RelPermalink -}}{{- end -}}
+
+{{- $title := .Get "title" | default $deck.title | default (humanize $id) -}}
+{{- $format := .Get "format" | default $deck.format -}}
+{{- $sourceUrl := .Get "sourceUrl" | default (.Get "url") | default $deck.source_url | default $deck.sourceUrl -}}
+{{- $downloadUrl := .Get "downloadUrl" | default $deck.download_url | default $deck.downloadUrl -}}
+{{- $showMana := ne (.Get "showMana" | default "true") "false" -}}
+{{- $showBreakdown := ne (.Get "showBreakdown" | default "true") "false" -}}
+{{- $mainboard := $deck.mainboard | default $deck.main | default dict -}}
+{{- $sideboard := $deck.sideboard | default $deck.side | default slice -}}
+
+{{- $labelCardCount := i18n "mtg_deck_card_count" | default "Card count" -}}
+{{- $labelBreakdown := i18n "mtg_deck_breakdown" | default "Show deck breakdown" -}}
+{{- $labelSource := i18n "mtg_deck_source" | default "Source" -}}
+{{- $labelDownload := i18n "mtg_deck_download" | default "Download" -}}
+{{- $labelCards := i18n "mtg_deck_cards" | default "Cards" -}}
+{{- $labelCard := i18n "mtg_deck_card" | default "Card" -}}
+
+{{- $sectionDefs := slice
+  (dict "key" "creatures" "label" (i18n "mtg_deck_creature" | default "Creature"))
+  (dict "key" "planeswalkers" "label" (i18n "mtg_deck_planeswalker" | default "Planeswalker"))
+  (dict "key" "instants" "label" (i18n "mtg_deck_instant" | default "Instant"))
+  (dict "key" "sorceries" "label" (i18n "mtg_deck_sorcery" | default "Sorcery"))
+  (dict "key" "artifacts" "label" (i18n "mtg_deck_artifact" | default "Artifact"))
+  (dict "key" "enchantments" "label" (i18n "mtg_deck_enchantment" | default "Enchantment"))
+  (dict "key" "battles" "label" (i18n "mtg_deck_battle" | default "Battle"))
+  (dict "key" "lands" "label" (i18n "mtg_deck_land" | default "Land"))
+  (dict "key" "other" "label" (i18n "mtg_deck_other" | default "Other"))
+-}}
+
+{{- $sections := slice -}}
+{{- $mainCount := 0 -}}
+{{- range $sectionDefs -}}
+  {{- $key := index . "key" -}}
+  {{- $label := index . "label" -}}
+  {{- with index $mainboard $key -}}
+    {{- $cards := . -}}
+    {{- $count := 0 -}}
+    {{- range $cards -}}{{- $count = add $count (.qty | default 1 | int) -}}{{- end -}}
+    {{- if gt $count 0 -}}
+      {{- $sections = $sections | append (dict "label" $label "cards" $cards "count" $count) -}}
+    {{- end -}}
+    {{- $mainCount = add $mainCount $count -}}
+  {{- end -}}
+{{- end -}}
+
+{{- $sideboardCards := slice -}}
+{{- $sideboardCount := 0 -}}
+{{- if reflect.IsSlice $sideboard -}}
+  {{- $sideboardCards = $sideboard -}}
+  {{- range $sideboardCards -}}{{- $sideboardCount = add $sideboardCount (.qty | default 1 | int) -}}{{- end -}}
+{{- else if reflect.IsMap $sideboard -}}
+  {{- range $sectionDefs -}}
+    {{- with index $sideboard (index . "key") -}}
+      {{- range . -}}
+        {{- $sideboardCards = $sideboardCards | append . -}}
+        {{- $sideboardCount = add $sideboardCount (.qty | default 1 | int) -}}
+      {{- end -}}
+    {{- end -}}
+  {{- end -}}
+{{- end -}}
+{{- if gt $sideboardCount 0 -}}
+  {{- $sections = $sections | append (dict "label" (i18n "mtg_deck_sideboard" | default "Sideboard") "cards" $sideboardCards "count" $sideboardCount) -}}
+{{- end -}}
+
+<aside class="deck-preview" id="deck-{{ $id | urlize }}">
+  <header class="deck-preview__header">
+    <div>
+      <h3 class="deck-preview__title">{{ $title }}</h3>
+      {{- with $format -}}<p class="deck-preview__format">{{ . }}</p>{{- end -}}
+    </div>
+    {{- if or $sourceUrl $downloadUrl -}}
+      <nav class="deck-preview__actions" aria-label="{{ $title }} links">
+        {{- with $sourceUrl -}}<a href="{{ . }}" rel="noopener noreferrer">{{ $labelSource }}</a>{{- end -}}
+        {{- with $downloadUrl -}}<a href="{{ . }}" rel="noopener noreferrer">{{ $labelDownload }}</a>{{- end -}}
+      </nav>
+    {{- end -}}
+  </header>
+
+  <div class="deck-preview__summary">
+    <span>
+      <strong>{{ $labelCardCount }}</strong>
+      <span>{{ $mainCount }} / {{ $sideboardCount }}</span>
+    </span>
+  </div>
+
+  {{- if $showBreakdown -}}
+    <details class="deck-preview__breakdown">
+      <summary>{{ $labelBreakdown }}</summary>
+      <div class="deck-preview__breakdown-grid">
+        {{- range $sections -}}
+          {{- $sectionCount := .count -}}
+          {{- $pct := 0 -}}
+          {{- if gt (add $mainCount $sideboardCount) 0 -}}
+            {{- $pct = div (mul $sectionCount 100.0) (add $mainCount $sideboardCount) -}}
+          {{- end -}}
+          <div class="deck-preview__breakdown-row">
+            <span>{{ .label }}</span>
+            <span>{{ $sectionCount }}</span>
+            <span class="deck-preview__bar" style="--deck-bar: {{ $pct }}%"></span>
+          </div>
+        {{- end -}}
+      </div>
+    </details>
+  {{- end -}}
+
+  <div class="deck-preview__sections">
+    {{- range $sections -}}
+      <section class="deck-preview__section">
+        <header class="deck-preview__section-header">
+          <h4>{{ upper .label }}</h4>
+          <span>{{ .count }} {{ cond (eq .count 1) $labelCard $labelCards }}</span>
+        </header>
+        <ol class="deck-preview__cards">
+          {{- range .cards -}}
+            {{- partial "deck-card-row.html" (dict "card" . "showMana" $showMana) -}}
+          {{- end -}}
+        </ol>
+      </section>
+    {{- end -}}
+  </div>
+</aside>
