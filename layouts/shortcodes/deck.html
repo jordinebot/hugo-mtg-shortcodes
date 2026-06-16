@@ -10,26 +10,28 @@
 {{- $downloadUrl := .Get "downloadUrl" | default $deck.download_url | default $deck.downloadUrl -}}
 {{- $showMana := ne (.Get "showMana" | default "true") "false" -}}
 {{- $showBreakdown := ne (.Get "showBreakdown" | default "true") "false" -}}
+{{- $breakdownOpen := eq (.Get "breakdownOpen" | default $deck.breakdown_open | default "false") "true" -}}
 {{- $mainboard := $deck.mainboard | default $deck.main | default dict -}}
 {{- $sideboard := $deck.sideboard | default $deck.side | default slice -}}
 
 {{- $labelCardCount := i18n "mtg_deck_card_count" | default "Card count" -}}
 {{- $labelBreakdown := i18n "mtg_deck_breakdown" | default "Show deck breakdown" -}}
+{{- $labelHideBreakdown := i18n "mtg_deck_hide_breakdown" | default "Hide deck breakdown" -}}
 {{- $labelSource := i18n "mtg_deck_source" | default "Source" -}}
 {{- $labelDownload := i18n "mtg_deck_download" | default "Download" -}}
 {{- $labelCards := i18n "mtg_deck_cards" | default "Cards" -}}
 {{- $labelCard := i18n "mtg_deck_card" | default "Card" -}}
 
 {{- $sectionDefs := slice
-  (dict "key" "creatures" "label" (i18n "mtg_deck_creature" | default "Creature"))
-  (dict "key" "planeswalkers" "label" (i18n "mtg_deck_planeswalker" | default "Planeswalker"))
-  (dict "key" "instants" "label" (i18n "mtg_deck_instant" | default "Instant"))
-  (dict "key" "sorceries" "label" (i18n "mtg_deck_sorcery" | default "Sorcery"))
-  (dict "key" "artifacts" "label" (i18n "mtg_deck_artifact" | default "Artifact"))
-  (dict "key" "enchantments" "label" (i18n "mtg_deck_enchantment" | default "Enchantment"))
-  (dict "key" "battles" "label" (i18n "mtg_deck_battle" | default "Battle"))
-  (dict "key" "lands" "label" (i18n "mtg_deck_land" | default "Land"))
-  (dict "key" "other" "label" (i18n "mtg_deck_other" | default "Other"))
+  (dict "key" "creatures" "label" (i18n "mtg_deck_creature" | default "Creature") "chart" "#fffbd5")
+  (dict "key" "planeswalkers" "label" (i18n "mtg_deck_planeswalker" | default "Planeswalker") "chart" "#f7a444")
+  (dict "key" "instants" "label" (i18n "mtg_deck_instant" | default "Instant") "chart" "#c9c0bc")
+  (dict "key" "sorceries" "label" (i18n "mtg_deck_sorcery" | default "Sorcery") "chart" "#a8d9f0")
+  (dict "key" "artifacts" "label" (i18n "mtg_deck_artifact" | default "Artifact") "chart" "#d8d2c8")
+  (dict "key" "enchantments" "label" (i18n "mtg_deck_enchantment" | default "Enchantment") "chart" "#f0d08b")
+  (dict "key" "battles" "label" (i18n "mtg_deck_battle" | default "Battle") "chart" "#d8aacb")
+  (dict "key" "lands" "label" (i18n "mtg_deck_land" | default "Land") "chart" "#9fd2aa")
+  (dict "key" "other" "label" (i18n "mtg_deck_other" | default "Other") "chart" "#d8dce2")
 -}}
 
 {{- $sections := slice -}}
@@ -37,16 +39,99 @@
 {{- range $sectionDefs -}}
   {{- $key := index . "key" -}}
   {{- $label := index . "label" -}}
+  {{- $chart := index . "chart" -}}
   {{- with index $mainboard $key -}}
     {{- $cards := . -}}
     {{- $count := 0 -}}
     {{- range $cards -}}{{- $count = add $count (.qty | default 1 | int) -}}{{- end -}}
     {{- if gt $count 0 -}}
-      {{- $sections = $sections | append (dict "label" $label "cards" $cards "count" $count) -}}
+      {{- $sections = $sections | append (dict "key" $key "label" $label "cards" $cards "count" $count "chart" $chart) -}}
     {{- end -}}
     {{- $mainCount = add $mainCount $count -}}
   {{- end -}}
 {{- end -}}
+{{- $mainSections := $sections -}}
+
+{{- $manaValues := dict -}}
+{{- $colorCounts := dict -}}
+{{- $colorTotal := 0 -}}
+{{- range $mainSections -}}
+  {{- range .cards -}}
+    {{- $card := . -}}
+    {{- $qty := $card.qty | default 1 | int -}}
+    {{- $data := false -}}
+    {{- with $card.name -}}
+      {{- $data = partial "scryfall-card.html" (dict "name" . "set" ($card.set | default "")) -}}
+    {{- end -}}
+    {{- with $data -}}
+      {{- $typeLine := .type_line | default "" -}}
+      {{- $isLand := in $typeLine "Land" -}}
+      {{- if not $isLand -}}
+        {{- $mv := .cmc | default .mana_value | default 0 | int -}}
+        {{- $mvKey := cond (gt $mv 7) "7+" (printf "%d" $mv) -}}
+        {{- $manaValues = merge $manaValues (dict $mvKey (add (index $manaValues $mvKey | default 0) $qty)) -}}
+        {{- $colors := .colors | default slice -}}
+        {{- if and (eq (len $colors) 0) .card_faces -}}
+          {{- $front := index .card_faces 0 -}}
+          {{- $colors = $front.colors | default slice -}}
+        {{- end -}}
+        {{- $colorKey := "" -}}
+        {{- if gt (len $colors) 1 -}}
+          {{- $colorKey = "multicolor" -}}
+        {{- else if eq (len $colors) 1 -}}
+          {{- $colorKey = lower (index $colors 0) -}}
+        {{- else -}}
+          {{- $colorKey = "colorless" -}}
+        {{- end -}}
+        {{- $colorCounts = merge $colorCounts (dict $colorKey (add (index $colorCounts $colorKey | default 0) $qty)) -}}
+        {{- $colorTotal = add $colorTotal $qty -}}
+      {{- end -}}
+    {{- end -}}
+  {{- end -}}
+{{- end -}}
+
+{{- $colorDefs := slice
+  (dict "key" "w" "label" (i18n "mtg_deck_white" | default "White") "chart" "#fffbd5")
+  (dict "key" "u" "label" (i18n "mtg_deck_blue" | default "Blue") "chart" "#a8d9f0")
+  (dict "key" "b" "label" (i18n "mtg_deck_black" | default "Black") "chart" "#c9c0bc")
+  (dict "key" "r" "label" (i18n "mtg_deck_red" | default "Red") "chart" "#f7a444")
+  (dict "key" "g" "label" (i18n "mtg_deck_green" | default "Green") "chart" "#9fd2aa")
+  (dict "key" "multicolor" "label" (i18n "mtg_deck_multicolor" | default "Multicolor") "chart" "#ffd470")
+  (dict "key" "colorless" "label" (i18n "mtg_deck_colorless" | default "Colorless") "chart" "#d8dce2")
+-}}
+
+{{- $colorItems := slice -}}
+{{- range $colorDefs -}}
+  {{- $count := index $colorCounts (index . "key") | default 0 -}}
+  {{- if gt $count 0 -}}
+    {{- $colorItems = $colorItems | append (merge . (dict "count" $count)) -}}
+  {{- end -}}
+{{- end -}}
+
+{{- $typeItems := slice -}}
+{{- range $mainSections -}}
+  {{- if gt .count 0 -}}
+    {{- $typeItems = $typeItems | append (dict "label" .label "count" .count "chart" .chart) -}}
+  {{- end -}}
+{{- end -}}
+
+{{- $colorSegments := slice -}}
+{{- $colorCursor := 0.0 -}}
+{{- range $colorItems -}}
+  {{- $end := add $colorCursor (div (mul .count 360.0) $colorTotal) -}}
+  {{- $colorSegments = $colorSegments | append (printf "%s %.4fdeg %.4fdeg" .chart $colorCursor $end) -}}
+  {{- $colorCursor = $end -}}
+{{- end -}}
+{{- $colorGradient := cond (gt (len $colorSegments) 0) (delimit $colorSegments ", ") "#d8dce2 0deg 360deg" -}}
+
+{{- $typeSegments := slice -}}
+{{- $typeCursor := 0.0 -}}
+{{- range $typeItems -}}
+  {{- $end := add $typeCursor (div (mul .count 360.0) $mainCount) -}}
+  {{- $typeSegments = $typeSegments | append (printf "%s %.4fdeg %.4fdeg" .chart $typeCursor $end) -}}
+  {{- $typeCursor = $end -}}
+{{- end -}}
+{{- $typeGradient := cond (gt (len $typeSegments) 0) (delimit $typeSegments ", ") "#d8dce2 0deg 360deg" -}}
 
 {{- $sideboardCards := slice -}}
 {{- $sideboardCount := 0 -}}
@@ -89,21 +174,47 @@
   </div>
 
   {{- if $showBreakdown -}}
-    <details class="deck-preview__breakdown">
-      <summary>{{ $labelBreakdown }}</summary>
-      <div class="deck-preview__breakdown-grid">
-        {{- range $sections -}}
-          {{- $sectionCount := .count -}}
-          {{- $pct := 0 -}}
-          {{- if gt (add $mainCount $sideboardCount) 0 -}}
-            {{- $pct = div (mul $sectionCount 100.0) (add $mainCount $sideboardCount) -}}
-          {{- end -}}
-          <div class="deck-preview__breakdown-row">
-            <span>{{ .label }}</span>
-            <span>{{ $sectionCount }}</span>
-            <span class="deck-preview__bar" style="--deck-bar: {{ $pct }}%"></span>
+    <details class="deck-preview__breakdown"{{ if $breakdownOpen }} open{{ end }}>
+      <summary>
+        <span class="deck-preview__show-label">{{ $labelBreakdown }}</span>
+        <span class="deck-preview__hide-label">{{ $labelHideBreakdown }}</span>
+      </summary>
+      <div class="deck-preview__breakdown-panels">
+        <section class="deck-preview__breakdown-panel">
+          <h4>{{ i18n "mtg_deck_mana_cost" | default "Mana cost" }}</h4>
+          <p>{{ $labelCardCount }}</p>
+          <div class="deck-preview__mana-values">
+            {{- range slice "0" "1" "2" "3" "4" "5" "6" "7+" -}}
+              {{- $count := index $manaValues . | default 0 -}}
+              {{- if gt $count 0 -}}
+                <span class="deck-preview__mana-value">
+                  <strong>{{ . }}</strong>
+                  <span>{{ $count }}</span>
+                </span>
+              {{- end -}}
+            {{- end -}}
           </div>
-        {{- end -}}
+        </section>
+
+        <section class="deck-preview__breakdown-panel">
+          <h4>{{ i18n "mtg_deck_mana_colors" | default "Mana colors" }}</h4>
+          <div class="deck-preview__donut" style="--deck-chart: {{ $colorGradient | safeCSS }}"></div>
+          <ul class="deck-preview__legend">
+            {{- range $colorItems -}}
+              <li><span style="--deck-swatch: {{ .chart | safeCSS }}"></span>{{ .label }}</li>
+            {{- end -}}
+          </ul>
+        </section>
+
+        <section class="deck-preview__breakdown-panel">
+          <h4>{{ i18n "mtg_deck_card_types" | default "Card types" }}</h4>
+          <div class="deck-preview__donut" style="--deck-chart: {{ $typeGradient | safeCSS }}"></div>
+          <ul class="deck-preview__legend">
+            {{- range $typeItems -}}
+              <li><span style="--deck-swatch: {{ .chart | safeCSS }}"></span>{{ .label }}</li>
+            {{- end -}}
+          </ul>
+        </section>
       </div>
     </details>
   {{- end -}}
