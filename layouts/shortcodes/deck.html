@@ -159,18 +159,21 @@
   {{- $sections = $sections | append (dict "label" (i18n "mtg_deck_sideboard" | default "Sideboard") "cards" $sideboardCards "count" $sideboardCount) -}}
 {{- end -}}
 
-<aside class="deck-preview" id="deck-{{ $id | urlize }}">
+<aside class="deck-preview{{ if $showBreakdown }} deck-preview--has-breakdown{{ end }}" id="deck-{{ $id | urlize }}">
   <header class="deck-preview__header">
     <div class="deck-preview__identity">
       <h3 class="deck-preview__title">{{ $title }}</h3>
+      {{- with $sourceUrl -}}<a class="deck-preview__source" href="{{ . }}" rel="noopener noreferrer">{{ $labelSource }}</a>{{- end -}}
       <div class="deck-preview__meta">
-        {{- with $format -}}<span class="deck-preview__format">{{ . }}</span>{{- end -}}
-        <span class="deck-preview__count" aria-label="{{ $labelCardCount }}">{{ $mainCount }} / {{ $sideboardCount }}</span>
+        {{- with $format -}}
+          <span class="deck-preview__format">{{ . }}</span>
+          <span class="deck-preview__meta-separator" aria-hidden="true">•</span>
+        {{- end -}}
+        <span class="deck-preview__count"><span>{{ $labelCardCount }}</span> {{ $mainCount }} / {{ $sideboardCount }}</span>
       </div>
     </div>
-    {{- if or $sourceUrl $downloadUrl -}}
+    {{- if $downloadUrl -}}
       <nav class="deck-preview__actions" aria-label="{{ $title }} links">
-        {{- with $sourceUrl -}}<a href="{{ . }}" rel="noopener noreferrer">{{ $labelSource }}</a>{{- end -}}
         {{- with $downloadUrl -}}<a href="{{ . }}" rel="noopener noreferrer">{{ $labelDownload }}</a>{{- end -}}
       </nav>
     {{- end -}}
