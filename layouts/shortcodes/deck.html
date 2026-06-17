@@ -159,7 +159,7 @@
   {{- $sections = $sections | append (dict "label" (i18n "mtg_deck_sideboard" | default "Sideboard") "cards" $sideboardCards "count" $sideboardCount) -}}
 {{- end -}}
 
-<aside class="deck-preview{{ if $showBreakdown }} deck-preview--has-breakdown{{ end }}" id="deck-{{ $id | urlize }}">
+<aside class="deck-preview" id="deck-{{ $id | urlize }}">
   <header class="deck-preview__header">
     <div class="deck-preview__identity">
       <h3 class="deck-preview__title">{{ $title }}</h3>

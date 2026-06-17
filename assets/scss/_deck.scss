@@ -1,5 +1,4 @@
 .deck-preview {
-  position: relative;
   margin: 2rem 0;
   border: 1px solid var(--color-border, rgba(0, 0, 0, 0.14));
   border-radius: 8px;
@@ -19,11 +18,6 @@
   border-bottom: 1px solid var(--color-border, rgba(0, 0, 0, 0.14));
 }
 
-.deck-preview--has-breakdown .deck-preview__header {
-  min-height: 4.6rem;
-  padding-right: 6rem;
-}
-
 .deck-preview__identity {
   display: grid;
   gap: 0.28rem;
@@ -31,7 +25,8 @@
 }
 
 .deck-preview__title {
-  margin: 0;
+  margin-top: 0 !important;
+  margin-bottom: var(--space-3);
   font-size: clamp(1rem, 1.35vw, 1.25rem);
   line-height: 1.1;
   text-transform: uppercase;
@@ -40,7 +35,7 @@
 .deck-preview__source {
   width: fit-content;
   color: var(--color-accent, currentColor);
-  font-size: 0.78rem;
+  font-size: 0.89rem;
   font-weight: 700;
   line-height: 1;
   text-decoration: none;
@@ -111,7 +106,7 @@
 }
 
 .deck-preview__breakdown {
-  padding: 0 1rem;
+  padding: 0.7rem 1rem 0;
 }
 
 .deck-preview__breakdown summary {
@@ -120,10 +115,7 @@
   justify-content: center;
   width: fit-content;
   min-height: 1.8rem;
-  position: absolute;
-  top: 0.8rem;
-  right: 1rem;
-  margin: 0;
+  margin: 0 0 0 auto;
   padding: 0.3rem 0.6rem;
   border: 1px solid var(--color-border, rgba(0, 0, 0, 0.14));
   border-radius: 6px;
@@ -386,21 +378,12 @@ a.deck-preview__card-name:hover {
     flex-direction: column;
   }
 
-  .deck-preview--has-breakdown .deck-preview__header {
-    padding-right: 1rem;
-    padding-bottom: 0.8rem;
-  }
-
   .deck-preview__actions {
     justify-content: flex-start;
   }
 
-  .deck-preview__breakdown {
-    padding: 0.7rem 1rem 0;
-  }
-
   .deck-preview__breakdown summary {
-    position: static;
+    margin-left: 0;
   }
 
   .deck-preview__sections {
