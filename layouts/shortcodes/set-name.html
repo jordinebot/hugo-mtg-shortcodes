@@ -1,0 +1,11 @@
+{{- $code := lower (trim (.Get "code" | default (.Get 0)) " ") -}}
+{{- $name := trim (.Get "name" | default (.Get 1)) " " -}}
+{{- if not $name -}}
+  {{- errorf "set-name shortcode: missing set name (page %q)" .Page.RelPermalink -}}
+{{- end -}}
+<span class="set-name">
+  <a href="https://scryfall.com/sets/{{ $code }}" target="_blank" rel="noopener noreferrer">
+    {{- partial "set-symbol.html" (dict "code" $code "page" .Page "decorative" true) -}}
+    &nbsp;{{ $name }} ({{ upper $code }})
+  </a>
+</span>

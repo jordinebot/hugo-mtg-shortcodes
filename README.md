@@ -8,6 +8,7 @@ A standalone Hugo Module that ships **Magic: The Gathering shortcodes** — inli
 
 - **`mana`** — inline mana symbols rendered from a `{W}{U}{B}{R}{G}` cost string. Uses the Mana icon font.
 - **`set`** — inline expansion symbols rendered from an MTG set code. Uses the Keyrune icon font.
+- **`set-name`** — an inline set symbol and set name linked to its Scryfall set page.
 - **`card`** — full-size card preview block (image + name + type line), fetched from Scryfall. Handles double-faced cards with a flip toggle.
 - **`cardname`** — inline card name with a 240px hover-preview image. Smart positioning keeps the preview inside the viewport even when the link sits near an edge.
 - **`combo`** — up to five cards arranged like a fanned hand, with a hover spread animation.
@@ -106,6 +107,17 @@ The local check warns without failing. CI runs it with `--strict`, which fails w
 ```sh
 scripts/update-keyrune.sh 3.20.0
 ```
+
+### `set-name`
+
+Render a set symbol followed by its name and code, linked to the corresponding Scryfall set page:
+
+```md
+{{</* set-name "TLA" "Avatar, The Last Airbender" */>}}
+{{</* set-name code="TLA" name="Avatar, The Last Airbender" */>}}
+```
+
+Both forms render as the TLA symbol followed by a link labelled `Avatar, The Last Airbender (TLA)`.
 
 ### `card`
 
@@ -219,7 +231,7 @@ Draft-summary callout, designed for limited reports:
 */>}}
 ```
 
-`index="1"` renders as "Draft 1"; passing `index="Draft 1"` is also fine. `set` is the MTG set code (e.g. `SOS`, `MKM`) — it renders as a badge in the header linking to the set's page on Scryfall. `colors` accepts brace-delimited mana symbols like `{R}{W}` or compact colour strings like `RW`. `winrate` can include `%` or omit it. `result`, `matches`, and `record` are accepted aliases for the match record. `seventeenlands` accepts either the 17Lands event ID or a full 17Lands URL and renders external Draft, Picks, Pool, Deck, and Details links. `17lands`, `17landsId`, and `seventeenlandsId` are also accepted aliases. The visible labels use Hugo i18n keys prefixed with `mtg_draft_`, so sites can override them in their own `i18n` files.
+`index="1"` renders as "Draft 1"; passing `index="Draft 1"` is also fine. `set` is the MTG set code (e.g. `SOS`, `MKM`) — it renders as a Keyrune symbol followed by a badge linking to the set's page on Scryfall. `colors` accepts brace-delimited mana symbols like `{R}{W}` or compact colour strings like `RW`. `winrate` can include `%` or omit it. `result`, `matches`, and `record` are accepted aliases for the match record. `seventeenlands` accepts either the 17Lands event ID or a full 17Lands URL and renders external Draft, Picks, Pool, Deck, and Details links. `17lands`, `17landsId`, and `seventeenlandsId` are also accepted aliases. The visible labels use Hugo i18n keys prefixed with `mtg_draft_`, so sites can override them in their own `i18n` files.
 
 ## Theming
 

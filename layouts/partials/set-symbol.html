@@ -1,0 +1,20 @@
+{{- $code := lower (trim .code " ") -}}
+{{- $rarity := lower (trim (.rarity | default "") " ") -}}
+{{- $page := .page -}}
+{{- $pagePath := "unknown page" -}}
+{{- with $page -}}{{- $pagePath = .RelPermalink -}}{{- end -}}
+{{- if not $code -}}
+  {{- errorf "set symbol: missing set code (page %q)" $pagePath -}}
+{{- end -}}
+{{- if not (findRE `^[a-z0-9-]+$` $code) -}}
+  {{- errorf "set symbol: invalid set code %q (page %q)" $code $pagePath -}}
+{{- end -}}
+{{- $rarities := slice "common" "uncommon" "rare" "mythic" "timeshifted" "foil" -}}
+{{- if and $rarity (not (in $rarities $rarity)) -}}
+  {{- errorf "set symbol: invalid rarity %q (page %q)" $rarity $pagePath -}}
+{{- end -}}
+{{- $classes := slice "ss" (printf "ss-%s" $code) -}}
+{{- with $rarity -}}
+  {{- $classes = $classes | append (printf "ss-%s" .) -}}
+{{- end -}}
+<i class="{{ delimit $classes " " }}"{{ if .decorative }} aria-hidden="true"{{ else }} role="img" aria-label="{{ upper $code }} set symbol"{{ end }}></i>{{- /* Keep the symbol inline for partial consumers. */ -}}

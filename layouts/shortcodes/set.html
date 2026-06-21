@@ -1,17 +1,3 @@
 {{- $code := lower (trim (.Get "code" | default (.Get 0)) " ") -}}
 {{- $rarity := lower (trim (.Get "rarity" | default (.Get 1)) " ") -}}
-{{- if not $code -}}
-  {{- errorf "set shortcode: missing set code (page %q)" .Page.RelPermalink -}}
-{{- end -}}
-{{- if not (findRE `^[a-z0-9-]+$` $code) -}}
-  {{- errorf "set shortcode: invalid set code %q (page %q)" $code .Page.RelPermalink -}}
-{{- end -}}
-{{- $rarities := slice "common" "uncommon" "rare" "mythic" "timeshifted" "foil" -}}
-{{- if and $rarity (not (in $rarities $rarity)) -}}
-  {{- errorf "set shortcode: invalid rarity %q (page %q)" $rarity .Page.RelPermalink -}}
-{{- end -}}
-{{- $classes := slice "ss" (printf "ss-%s" $code) -}}
-{{- with $rarity -}}
-  {{- $classes = $classes | append (printf "ss-%s" .) -}}
-{{- end -}}
-<i class="{{ delimit $classes " " }}" role="img" aria-label="{{ upper $code }} set symbol"></i>
+{{- partial "set-symbol.html" (dict "code" $code "rarity" $rarity "page" .Page) -}}

@@ -59,7 +59,10 @@
 <aside class="draft draft--{{ $outcome }}"{{ with $index }} id="draft-{{ . | urlize }}"{{ end }}>
   <header class="draft__head">
     {{- with $set -}}
-      <a class="draft__set" href="https://scryfall.com/sets/{{ lower . }}" target="_blank" rel="noopener noreferrer">{{ upper . }}</a>
+      <span class="draft__set-group">
+        {{- partial "set-symbol.html" (dict "code" . "page" $.Page "decorative" true) -}}
+        <a class="draft__set" href="https://scryfall.com/sets/{{ lower . }}" target="_blank" rel="noopener noreferrer">{{ upper . }}</a>
+      </span>
     {{- end -}}
     <h3 class="draft__title">{{ $title }}</h3>
     {{- with $colors -}}
