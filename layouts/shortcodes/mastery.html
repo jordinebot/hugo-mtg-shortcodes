@@ -15,14 +15,17 @@
 
 <div class="mastery">
   <header class="mastery__head">
-    {{- if $ongoing -}}<span class="mtg-ongoing" aria-hidden="true"></span>{{- end -}}
     {{- with $set -}}
-      <a class="mastery__set" href="https://scryfall.com/sets/{{ lower . }}" target="_blank" rel="noopener noreferrer">{{ upper . }}</a>
+      <span class="mastery__set-group">
+        {{- partial "set-symbol.html" (dict "code" . "page" $.Page "decorative" true) -}}
+        <a class="mastery__set" href="https://scryfall.com/sets/{{ lower . }}" target="_blank" rel="noopener noreferrer">{{ upper . }}</a>
+      </span>
     {{- end -}}
     <span class="mastery__title">{{ $labelTitle }}</span>
     <span class="mastery__pass mastery__pass--{{ if $pass }}owned{{ else }}free{{ end }}">
       {{- if $pass }}{{ $labelPass }}{{ else }}{{ $labelFree }}{{ end -}}
     </span>
+    {{- if $ongoing -}}<span class="mtg-ongoing" aria-hidden="true"></span>{{- end -}}
   </header>
   <div class="mastery__progress">
     <div class="mastery__bar-track">

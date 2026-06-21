@@ -13,6 +13,17 @@
   border-bottom: 1px solid var(--color-border, rgba(0, 0, 0, 0.12));
 }
 
+.mastery__set-group {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  flex-shrink: 0;
+
+  > .ss {
+    font-size: 1.4rem;
+  }
+}
+
 .mastery__set {
   padding: 0.1em 0.45em;
   border-radius: 0.25em;

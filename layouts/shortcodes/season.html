@@ -39,17 +39,13 @@
 
 <div class="season">
   <header class="season__head">
-    {{- if $ongoing -}}
-    <div class="season__head-title">
-      <span class="mtg-ongoing" aria-hidden="true"></span>
-      <span class="season__month">{{ $month }}</span>
-    </div>
-    {{- else -}}
     <span class="season__month">{{ $month }}</span>
-    {{- end -}}
-    <span class="season__spending{{ if not $spending }} season__spending--f2p{{ end }}">
-      {{- if $spending }}{{ $spending }}{{ else }}{{ $labelF2P }}{{ end -}}
-    </span>
+    <div class="season__head-status">
+      <span class="season__spending{{ if not $spending }} season__spending--f2p{{ end }}">
+        {{- if $spending }}{{ $spending }}{{ else }}{{ $labelF2P }}{{ end -}}
+      </span>
+      {{- if $ongoing -}}<span class="mtg-ongoing" aria-hidden="true"></span>{{- end -}}
+    </div>
   </header>
 
   {{- if or $hasConstructed $hasLimited -}}
