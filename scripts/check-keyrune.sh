@@ -3,7 +3,9 @@
 set -euo pipefail
 
 root_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
-version_file="${root_dir}/KEYRUNE_VERSION"
+version_file="${KEYRUNE_VERSION_FILE:-${root_dir}/KEYRUNE_VERSION}"
+github_release_url="${KEYRUNE_GITHUB_RELEASE_URL:-https://api.github.com/repos/andrewgioia/keyrune/releases/latest}"
+npm_release_url="${KEYRUNE_NPM_RELEASE_URL:-https://registry.npmjs.org/keyrune/latest}"
 strict=false
 
 usage() {
@@ -29,20 +31,40 @@ if [[ ! -f "${version_file}" ]]; then
 fi
 
 pinned_version="$(tr -d '[:space:]' < "${version_file}")"
-release_json="$(curl --fail --silent --show-error --location --retry 3 \
-  --connect-timeout 10 --max-time 60 \
-  --header 'Accept: application/vnd.github+json' \
-  --header 'X-GitHub-Api-Version: 2022-11-28' \
-  'https://api.github.com/repos/andrewgioia/keyrune/releases/latest')"
-latest_version="$(printf '%s\n' "${release_json}" | sed -nE 's/.*"tag_name":[[:space:]]*"v?([^"]+)".*/\1/p' | head -n 1)"
+
+fetch_github_version() {
+  local release_json
+  release_json="$(curl --fail --silent --location --retry 2 --retry-all-errors \
+    --retry-delay 1 --retry-max-time 30 --connect-timeout 5 --max-time 20 \
+    --header 'Accept: application/vnd.github+json' \
+    --header 'X-GitHub-Api-Version: 2022-11-28' \
+    "${github_release_url}")" || return 1
+  printf '%s\n' "${release_json}" | sed -nE 's/.*"tag_name":[[:space:]]*"v?([^"]+)".*/\1/p' | head -n 1
+}
+
+fetch_npm_version() {
+  local release_json
+  release_json="$(curl --fail --silent --location --retry 2 --retry-all-errors \
+    --retry-delay 1 --retry-max-time 30 --connect-timeout 5 --max-time 20 \
+    "${npm_release_url}")" || return 1
+  printf '%s\n' "${release_json}" | sed -nE 's/.*"version":[[:space:]]*"v?([^"]+)".*/\1/p' | head -n 1
+}
+
+latest_version=""
+release_source=""
+if latest_version="$(fetch_npm_version)" && [[ -n "${latest_version}" ]]; then
+  release_source="npm"
+elif latest_version="$(fetch_github_version)" && [[ -n "${latest_version}" ]]; then
+  release_source="GitHub"
+fi
 
 if [[ -z "${latest_version}" ]]; then
-  echo "Keyrune check: could not determine the latest release" >&2
-  exit 1
+  echo "Keyrune check: could not reach npm or GitHub; skipping the version check." >&2
+  exit 0
 fi
 
 if [[ "${pinned_version}" == "${latest_version}" ]]; then
-  echo "Keyrune ${pinned_version} is current."
+  echo "Keyrune ${pinned_version} is current (${release_source})."
   exit 0
 fi
 

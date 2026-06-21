@@ -102,7 +102,7 @@ The module vendors a pinned Keyrune release so site builds remain reproducible a
 scripts/check-keyrune.sh
 ```
 
-The local check warns without failing. CI runs it with `--strict`, which fails when a different latest release is available. Update the stylesheet, WOFF2 font, license, and pinned version together with:
+The local check warns without failing. CI runs it with `--strict`, which fails when a different latest release is confirmed. npm is checked first with GitHub as a fallback; if both services are unavailable, the check warns and passes instead of failing a build for a network outage. Update the stylesheet, WOFF2 font, license, and pinned version together with:
 
 ```sh
 scripts/update-keyrune.sh 3.20.0
