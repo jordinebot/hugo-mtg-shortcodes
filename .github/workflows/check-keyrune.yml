@@ -1,0 +1,19 @@
+name: Check Keyrune version
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Check vendored Keyrune version
+        run: scripts/check-keyrune.sh --strict

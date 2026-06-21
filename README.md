@@ -1,12 +1,13 @@
 # hugo-mtg-shortcodes
 
-A standalone Hugo Module that ships **Magic: The Gathering shortcodes** — inline mana symbols, hover-preview card references, fanned-hand "combo" displays, tournament-match callouts, and draft-summary callouts — backed by the [Scryfall](https://scryfall.com/) API and the [Mana icon font](https://mana.andrewgioia.com/).
+A standalone Hugo Module that ships **Magic: The Gathering shortcodes** — inline mana and set symbols, hover-preview card references, fanned-hand "combo" displays, tournament-match callouts, and draft-summary callouts — backed by the [Scryfall](https://scryfall.com/) API, the [Mana icon font](https://mana.andrewgioia.com/), and the [Keyrune set icon font](https://keyrune.andrewgioia.com/).
 
 > **Note:** this module has been 100% vibe-coded — built iteratively through conversation with an AI assistant rather than from a formal spec. It builds, the shortcodes work, and the demos render — but expect rough edges, incomplete corners, and choices that haven't been stress-tested. Bug reports and PRs welcome.
 
 ## What's inside
 
 - **`mana`** — inline mana symbols rendered from a `{W}{U}{B}{R}{G}` cost string. Uses the Mana icon font.
+- **`set`** — inline expansion symbols rendered from an MTG set code. Uses the Keyrune icon font.
 - **`card`** — full-size card preview block (image + name + type line), fetched from Scryfall. Handles double-faced cards with a flip toggle.
 - **`cardname`** — inline card name with a 240px hover-preview image. Smart positioning keeps the preview inside the viewport even when the link sits near an edge.
 - **`combo`** — up to five cards arranged like a fanned hand, with a hover spread animation.
@@ -43,7 +44,7 @@ hugo mod get -u github.com/jordinebot/hugo-mtg-shortcodes
 
 Two partials need to be included in your theme:
 
-In `layouts/partials/head.html` (or wherever your `<head>` content lives), to load the mana font CSS:
+In `layouts/partials/head.html` (or wherever your `<head>` content lives), to load the Mana and Keyrune font CSS:
 
 ```go-template
 {{ partial "mtg-styles.html" . }}
@@ -76,6 +77,35 @@ A turn-one {{</* mana "{1}{G}" */>}} elf opens many doors.
 ```
 
 Renders the symbols inline using the [Mana](https://mana.andrewgioia.com/) icon font. Supports tap (`{T}`), untap (`{Q}`), hybrid (`{W/U}`), Phyrexian (`{W/P}`), generic numerics (`{0}`–`{20}`), and the colourless `{C}`.
+
+### `set`
+
+Inline expansion symbol rendering. Pass a set code from the [Keyrune icon list](https://keyrune.andrewgioia.com/icons.html):
+
+```md
+The next draft uses {{</* set "FIN" */>}} Final Fantasy boosters.
+```
+
+Set codes are case-insensitive. An optional second argument adds one of Keyrune's rarity colours: `common`, `uncommon`, `rare`, `mythic`, `timeshifted`, or `foil`.
+
+```md
+{{</* set "FIN" "mythic" */>}}
+{{</* set code="FIN" rarity="mythic" */>}}
+```
+
+#### Updating Keyrune
+
+The module vendors a pinned Keyrune release so site builds remain reproducible and work offline. Check whether that release is current with:
+
+```sh
+scripts/check-keyrune.sh
+```
+
+The local check warns without failing. CI runs it with `--strict`, which fails when a different latest release is available. Update the stylesheet, WOFF2 font, license, and pinned version together with:
+
+```sh
+scripts/update-keyrune.sh 3.20.0
+```
 
 ### `card`
 
@@ -223,6 +253,7 @@ That's all — the shortcodes will inherit your theme's palette without any furt
 
 - Card data: [Scryfall API](https://scryfall.com/docs/api)
 - Mana symbols: [Mana icon font](https://mana.andrewgioia.com/) by Andrew Gioia (licensed separately under the [SIL Open Font License](https://github.com/andrewgioia/mana/blob/master/LICENSE-OFL.txt))
+- Set symbols: [Keyrune icon font](https://keyrune.andrewgioia.com/) by Andrew Gioia (licensed separately; see `static/keyrune/LICENSE.md`)
 
 Magic: The Gathering and its mana symbols are trademarks of Wizards of the Coast LLC. This module is an independent project and is not affiliated with, endorsed by, or sponsored by Wizards of the Coast.
 
