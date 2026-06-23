@@ -1,3 +1,18 @@
 {{- $n    := .n -}}
 {{- $sign := cond (lt $n 0) "negative" "positive" -}}
-<span class="arena-cur arena-cur--{{ $sign }}"><img class="arena-cur__icon" src="{{ printf "arena/%s.webp" .icon | relURL }}" alt="{{ .alt }}"><span class="arena-cur__amount">{{ lang.FormatNumber 0 $n }}</span></span>
+{{- $amount := lang.FormatNumber 0 $n -}}
+{{- $currencyLabels := dict
+  "coins" (i18n "mtg_arena_currency_coins" | default "Gold")
+  "gems" (i18n "mtg_arena_currency_gems" | default "Gems")
+  "draft-token" (i18n "mtg_arena_currency_draft_token" | default "Draft Tokens")
+  "sealed-token" (i18n "mtg_arena_currency_sealed_token" | default "Sealed Tokens")
+-}}
+{{- $label := .label -}}
+{{- if not $label -}}
+  {{- $label = index $currencyLabels .icon -}}
+{{- end -}}
+{{- if not $label -}}
+  {{- $label = .alt -}}
+{{- end -}}
+{{- $tooltip := .tooltip | default (printf "%s: %s" $label $amount) -}}
+<span class="arena-cur arena-cur--{{ $sign }}" title="{{ $tooltip }}" aria-label="{{ $tooltip }}"><img class="arena-cur__icon" src="{{ printf "arena/%s.webp" .icon | relURL }}" alt="" aria-hidden="true"><span class="arena-cur__amount">{{ $amount }}</span></span>
