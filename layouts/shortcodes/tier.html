@@ -1,0 +1,19 @@
+{{- $value := .Get "value" | default (.Get 0) | default "" | strings.TrimSpace | upper -}}
+{{- $allowed := slice "S" "A+" "A" "A-" "B+" "B" "B-" "C+" "C" "C-" "D+" "D" "D-" "F" "?" -}}
+
+{{- if not $value -}}
+  {{- errorf "tier shortcode: missing tier (page %q)" .Page.RelPermalink -}}
+{{- else if not (in $allowed $value) -}}
+  {{- errorf "tier shortcode: invalid tier %q; expected one of %s (page %q)" $value (delimit $allowed ", ") .Page.RelPermalink -}}
+{{- else -}}
+  {{- $family := lower (substr $value 0 1) -}}
+  {{- $grade := substr $value 0 1 -}}
+  {{- $modifier := "" -}}
+  {{- if gt (len $value) 1 -}}
+    {{- $modifier = substr $value 1 1 -}}
+  {{- end -}}
+  {{- if eq $value "?" -}}
+    {{- $family = "unknown" -}}
+  {{- end -}}
+  <span class="mtg-tier mtg-tier--{{ $family }}"><span class="mtg-tier__value">{{ $grade }}{{- with $modifier -}}<sup class="mtg-tier__modifier">{{ . }}</sup>{{- end -}}</span></span>
+{{- end -}}

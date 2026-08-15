@@ -1,0 +1,64 @@
+.mtg-tier {
+  --mtg-tier-color: var(--mtg-tier-unknown, #585858);
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.65em;
+  height: 1.65em;
+  box-sizing: border-box;
+  border-radius: 0.16em;
+  background-color: var(--mtg-tier-color);
+  color: #fff;
+  font-family: var(--font-display, inherit);
+  font-size: 0.8em;
+  font-weight: 800;
+  letter-spacing: 0;
+  line-height: 1;
+  vertical-align: middle;
+  white-space: nowrap;
+  position: relative;
+
+  &--s {
+    --mtg-tier-color: var(--mtg-tier-s, #3c759d);
+  }
+  &--a {
+    --mtg-tier-color: var(--mtg-tier-a, #597b36);
+  }
+  &--b {
+    --mtg-tier-color: var(--mtg-tier-b, #6a7c38);
+  }
+  &--c {
+    --mtg-tier-color: var(--mtg-tier-c, #8d6d37);
+  }
+  &--d {
+    --mtg-tier-color: var(--mtg-tier-d, #8d4536);
+  }
+  &--f {
+    --mtg-tier-color: var(--mtg-tier-f, #8d3737);
+  }
+  &--unknown {
+    --mtg-tier-color: var(--mtg-tier-unknown, #585858);
+  }
+}
+
+.mtg-tier__value {
+  display: inline-flex;
+  align-items: flex-start;
+  justify-content: center;
+  line-height: 1;
+  position: absolute;
+  left: 0.4em;
+  bottom: 0.2em;
+}
+
+.mtg-tier__modifier {
+  position: absolute;
+  bottom: 0.6em;
+  margin-inline-start: 0.04em;
+  font-size: 1.1em;
+  font-weight: inherit;
+  letter-spacing: 0;
+  line-height: 1;
+  left: 0.3em;
+}

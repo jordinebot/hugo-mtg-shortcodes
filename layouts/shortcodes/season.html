@@ -8,6 +8,16 @@
 {{- $limitedStart     := .Get "limited-start" -}}
 {{- $limitedEnd       := .Get "limited-end" -}}
 
+{{- $drafts  := .Get "drafts" | default 0 | int -}}
+{{- $wins    := .Get "wins"   | default 0 | int -}}
+{{- $losses  := .Get "losses" | default 0 | int -}}
+{{- $matches := add $wins $losses -}}
+{{- $winRate := 0.0 -}}
+{{- if gt $matches 0 -}}
+  {{- $winRate = mul (div (float $wins) (float $matches)) 100 -}}
+{{- end -}}
+{{- $hasDraftStats := or (gt $drafts 0) (gt $matches 0) -}}
+
 {{- $gemsStart  := .Get "gems-start"  | default 0 | int -}}
 {{- $gemsEarned := .Get "gems-earned" | default 0 | int -}}
 {{- $gemsBought := .Get "gems-bought" | default 0 | int -}}
@@ -36,6 +46,10 @@
 {{- $labelNet         := i18n "mtg_season_net"         | default "Net" -}}
 {{- $labelGems        := i18n "mtg_season_gems"        | default "Gems" -}}
 {{- $labelTokens      := i18n "mtg_season_tokens"      | default "Draft Tokens" -}}
+{{- $labelDrafts      := i18n "mtg_season_drafts"      | default "Drafts" -}}
+{{- $labelWins        := i18n "mtg_season_wins"        | default "Wins" -}}
+{{- $labelLosses      := i18n "mtg_season_losses"      | default "Losses" -}}
+{{- $labelWinRate     := i18n "mtg_season_winrate"     | default "Win rate" -}}
 
 <div class="season">
   <header class="season__head">
@@ -70,6 +84,27 @@
       </div>
     </div>
     {{- end -}}
+  </div>
+  {{- end -}}
+
+  {{- if $hasDraftStats -}}
+  <div class="season__stats">
+    <div class="season__stat">
+      <span class="season__stat-label">{{ $labelDrafts }}</span>
+      <span class="season__stat-value">{{ lang.FormatNumber 0 $drafts }}</span>
+    </div>
+    <div class="season__stat">
+      <span class="season__stat-label">{{ $labelWinRate }}</span>
+      <span class="season__stat-value">{{ lang.FormatNumber 1 $winRate }}%</span>
+    </div>
+    <div class="season__stat">
+      <span class="season__stat-label">{{ $labelWins }}</span>
+      <span class="season__stat-value season__stat-value--pos">{{ lang.FormatNumber 0 $wins }}</span>
+    </div>
+    <div class="season__stat">
+      <span class="season__stat-label">{{ $labelLosses }}</span>
+      <span class="season__stat-value season__stat-value--neg">{{ lang.FormatNumber 0 $losses }}</span>
+    </div>
   </div>
   {{- end -}}
 

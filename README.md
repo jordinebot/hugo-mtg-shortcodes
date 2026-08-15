@@ -7,6 +7,7 @@ A standalone Hugo Module that ships **Magic: The Gathering shortcodes** — inli
 ## What's inside
 
 - **`mana`** — inline mana symbols rendered from a `{W}{U}{B}{R}{G}` cost string. Uses the Mana icon font.
+- **`tier`** — inline tier-list ratings such as `S`, `A+`, or `B-`, rendered as compact coloured squares.
 - **`set`** — inline expansion symbols rendered from an MTG set code. Uses the Keyrune icon font.
 - **`set-name`** — an inline set symbol and set name linked to its Scryfall set page.
 - **`card`** — full-size card preview block (image + name + type line), fetched from Scryfall. Handles double-faced cards with a flip toggle.
@@ -15,8 +16,9 @@ A standalone Hugo Module that ships **Magic: The Gathering shortcodes** — inli
 - **`deck`** — full deck preview loaded from a Hugo data file, with grouped card lists, totals, mana costs, Scryfall links, and an optional breakdown.
 - **`match`** — tournament-match callout with round number, both players, deck names + links, and a coloured win/loss/draw chip.
 - **`draft`** — draft-summary callout with draft index, set code (linked to Scryfall), deck colours, winrate, and match record.
+- **`season`** — season summary with ranks, draft record, win rate, and Arena currency balances.
 
-All shortcodes use the [Scryfall API](https://scryfall.com/docs/api) (via `resources.GetRemote`) and are cached at build time, so subsequent builds don't re-hit the network for cards you've already referenced.
+Card-backed shortcodes use the [Scryfall API](https://scryfall.com/docs/api) (via `resources.GetRemote`) and are cached at build time, so subsequent builds don't re-hit the network for cards you've already referenced.
 
 ## Requirements
 
@@ -65,7 +67,7 @@ Inside your theme's `main.scss`, import the shortcode styles:
 @import "mtg-shortcodes";
 ```
 
-Hugo's module mounts will make the file resolvable. This single import pulls in `_cards`, `_mana`, `_match`, and `_draft`.
+Hugo's module mounts will make the file resolvable. This single import pulls in all shortcode styles.
 
 ## Usage
 
@@ -78,6 +80,18 @@ A turn-one {{</* mana "{1}{G}" */>}} elf opens many doors.
 ```
 
 Renders the symbols inline using the [Mana](https://mana.andrewgioia.com/) icon font. Supports tap (`{T}`), untap (`{Q}`), hybrid (`{W/U}`), Phyrexian (`{W/P}`), generic numerics (`{0}`–`{20}`), and the colourless `{C}`.
+
+### `tier`
+
+Render a compact tier-list rating inline with surrounding text:
+
+```md
+This card is {{</* tier "S" */>}}, while that one is {{</* tier value="B-" */>}}.
+```
+
+Values are case-insensitive. Supported ratings are `S`, `A+`, `A`, `A-`, `B+`, `B`, `B-`, `C+`, `C`, `C-`, `D+`, `D`, `D-`, `F`, and `?`. Plus and minus modifiers render as superscripts. Variants of the same letter share a colour inspired by the reference tier list: blue, green, olive, ochre, terracotta, red, and grey respectively.
+
+Override any colour with `--mtg-tier-s`, `--mtg-tier-a`, `--mtg-tier-b`, `--mtg-tier-c`, `--mtg-tier-d`, `--mtg-tier-f`, or `--mtg-tier-unknown`.
 
 ### `set`
 
@@ -215,6 +229,21 @@ Tournament-match callout, designed for round-by-round reports:
 ```
 
 The `result` is parsed; first number > second renders green ✅, second > first renders red ❌, ties render grey ➖. `player1` defaults to "Me" and `player2` to "Opponent". `deck1Url` / `deck2Url` are optional — without them the deck names render as plain text.
+
+### `season`
+
+Season summary card with optional ranked records, draft statistics, and gem/token balances:
+
+```md
+{{</* season
+  month="August 2026"
+  limited-start="Bronze 2" limited-end="Gold 3"
+  drafts="7" wins="22" losses="18"
+  gems-start="15405" gems-earned="6600" gems-spent="10500"
+*/>}}
+```
+
+When `drafts`, `wins`, and `losses` are provided, the card displays all three totals and calculates the win rate as `wins / (wins + losses)`. The draft statistics are optional, so existing season shortcodes remain valid without them.
 
 ### `draft`
 
