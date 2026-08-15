@@ -54,11 +54,17 @@
 
 .mtg-tier__modifier {
   position: absolute;
-  bottom: 0.6em;
   margin-inline-start: 0.04em;
   font-size: 1.1em;
   font-weight: inherit;
   letter-spacing: 0;
   line-height: 1;
-  left: 0.3em;
+  &--positive {
+    left: 0.4em;
+    bottom: 0.4em;
+  }
+  &--negative {
+    left: 0.5em;
+    bottom: 0.5em;
+  }
 }

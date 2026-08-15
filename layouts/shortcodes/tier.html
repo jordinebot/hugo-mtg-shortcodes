@@ -15,5 +15,5 @@
   {{- if eq $value "?" -}}
     {{- $family = "unknown" -}}
   {{- end -}}
-  <span class="mtg-tier mtg-tier--{{ $family }}"><span class="mtg-tier__value">{{ $grade }}{{- with $modifier -}}<sup class="mtg-tier__modifier">{{ . }}</sup>{{- end -}}</span></span>
+  <span class="mtg-tier mtg-tier--{{ $family }}"><span class="mtg-tier__value">{{ $grade }}{{- with $modifier -}}{{- $modifierType := cond (eq . "+") "positive" "negative" -}}<sup class="mtg-tier__modifier mtg-tier__modifier--{{ $modifierType }}">{{ . }}</sup>{{- end -}}</span></span>
 {{- end -}}

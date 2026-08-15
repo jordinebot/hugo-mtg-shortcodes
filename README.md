@@ -89,7 +89,7 @@ Render a compact tier-list rating inline with surrounding text:
 This card is {{</* tier "S" */>}}, while that one is {{</* tier value="B-" */>}}.
 ```
 
-Values are case-insensitive. Supported ratings are `S`, `A+`, `A`, `A-`, `B+`, `B`, `B-`, `C+`, `C`, `C-`, `D+`, `D`, `D-`, `F`, and `?`. Plus and minus modifiers render as superscripts. Variants of the same letter share a colour inspired by the reference tier list: blue, green, olive, ochre, terracotta, red, and grey respectively.
+Values are case-insensitive. Supported ratings are `S`, `A+`, `A`, `A-`, `B+`, `B`, `B-`, `C+`, `C`, `C-`, `D+`, `D`, `D-`, `F`, and `?`. Plus and minus modifiers render as superscripts and expose the `mtg-tier__modifier--positive` and `mtg-tier__modifier--negative` CSS hooks. Variants of the same letter share a colour inspired by the reference tier list: blue, green, olive, ochre, terracotta, red, and grey respectively.
 
 Override any colour with `--mtg-tier-s`, `--mtg-tier-a`, `--mtg-tier-b`, `--mtg-tier-c`, `--mtg-tier-d`, `--mtg-tier-f`, or `--mtg-tier-unknown`.
 
