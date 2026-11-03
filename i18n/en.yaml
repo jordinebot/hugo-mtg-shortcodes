@@ -1,4 +1,5 @@
 mtg_draft_date: "Date"
+mtg_match_round: "Round"
 mtg_draft_winrate: "Winrate"
 mtg_draft_reward: "Reward"
 mtg_draft_matches: "Matches"

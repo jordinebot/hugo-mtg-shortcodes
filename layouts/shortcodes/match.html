@@ -6,6 +6,7 @@
 {{- $deck1Url := .Get "deck1Url" -}}
 {{- $deck2 := .Get "deck2" -}}
 {{- $deck2Url := .Get "deck2Url" -}}
+{{- $labelRound := i18n "mtg_match_round" | default "Round" -}}
 
 {{- $outcome := "draw" -}}
 {{- if and $result (in $result "-") -}}
@@ -18,7 +19,7 @@
 
 <aside class="match" id="round-{{ $round }}">
   <header class="match__head">
-    <h3 class="match__round">Round {{ $round }}</h3>
+    <h3 class="match__round">{{ $labelRound }} {{ $round }}</h3>
     <span class="match__result match__result--{{ $outcome }}">
       {{- $result -}}
     </span>
