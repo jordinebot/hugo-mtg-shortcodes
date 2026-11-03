@@ -1,9 +1,11 @@
 {{- $name := .Get "name" | default (.Get 0) -}}
 {{- $set := .Get "set" | default (.Get 1) -}}
+{{- $label := .Get "label" | default (.Get 2) -}}
 {{- if and $name (in $name "|") -}}
   {{- $parts := split $name "|" -}}
   {{- $name = index $parts 0 | strings.TrimSpace -}}
   {{- $set = index $parts 1 | strings.TrimSpace -}}
+  {{- $label = $label | default (.Get 1) -}}
 {{- end -}}
 {{- if not $name -}}{{- errorf "cardname shortcode: missing card name (page %q)" .Page.RelPermalink -}}{{- end -}}
 
@@ -18,7 +20,7 @@
     {{- $front := index $data.card_faces 0 -}}
     {{- $back := index $data.card_faces 1 -}}
     <span class="cardname cardname--flippable js-flippable">
-      <a class="cardname__link" href="{{ $data.scryfall_uri }}" rel="noopener">{{ $data.name }}</a>
+      <a class="cardname__link" href="{{ $data.scryfall_uri }}" rel="noopener">{{ $label | default $data.name }}</a>
       <span class="cardname__preview">
         <span class="cardname__faces">
           <img class="cardname__face cardname__face--front" src="{{ $front.image_uris.normal }}" alt="" loading="lazy" aria-hidden="true">
@@ -35,7 +37,7 @@
       {{- $img = (index $data.card_faces 0).image_uris.normal -}}
     {{- end -}}
     <span class="cardname">
-      <a class="cardname__link" href="{{ $data.scryfall_uri }}" rel="noopener">{{ $data.name }}</a>
+      <a class="cardname__link" href="{{ $data.scryfall_uri }}" rel="noopener">{{ $label | default $data.name }}</a>
       <span class="cardname__preview">
         <img class="cardname__face" src="{{ $img }}" alt="" loading="lazy" aria-hidden="true">
       </span>

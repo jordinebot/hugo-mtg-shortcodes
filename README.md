@@ -151,9 +151,10 @@ Inline card name reference with a hover preview:
 ```md
 The classic {{</* cardname "Brainstorm" */>}} sees play in cube, legacy, and pauper alike.
 {{</* cardname "Tamiyo, Inquisitive Student|mh3" */>}} {{/* specific printing for DFCs */}}
+{{</* cardname "Teferi, Time Raveler|war" "Teferi" */>}} {{/* custom visible label */}}
 ```
 
-The preview only renders on hover (it's invisible by default). JS automatically nudges it left/right or flips it above/below the link so it always stays inside the viewport.
+The optional second positional argument (or `label` named argument) changes the visible link text while preserving the full card name for lookup and preview. The preview only renders on hover (it's invisible by default). JS automatically nudges it left/right or flips it above/below the link so it always stays inside the viewport.
 
 ### `combo`
 
