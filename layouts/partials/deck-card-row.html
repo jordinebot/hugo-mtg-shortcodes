@@ -5,7 +5,8 @@
 {{- $set := $card.set | default "" -}}
 {{- $data := false -}}
 {{- if $name -}}
-  {{- $data = partial "scryfall-card.html" (dict "name" $name "set" $set) -}}
+  {{- $result := partial "scryfall-card.html" (dict "name" $name "set" $set) -}}
+  {{- $data = $result.card -}}
 {{- end -}}
 
 {{- $displayName := $name -}}
@@ -23,7 +24,7 @@
     {{- end -}}
   {{- end -}}
 {{- else -}}
-  {{- warnf "deck shortcode: failed to fetch %q after Hugo's HTTP retries" $name -}}
+  {{- warnf "deck shortcode: failed to fetch %q after Hugo's HTTP retries: %s" $name $result.error -}}
 {{- end -}}
 
 <li class="deck-preview__card">

@@ -61,7 +61,8 @@
     {{- $qty := $card.qty | default 1 | int -}}
     {{- $data := false -}}
     {{- with $card.name -}}
-      {{- $data = partial "scryfall-card.html" (dict "name" . "set" ($card.set | default "")) -}}
+      {{- $result := partial "scryfall-card.html" (dict "name" . "set" ($card.set | default "")) -}}
+      {{- $data = $result.card -}}
     {{- end -}}
     {{- with $data -}}
       {{- $typeLine := .type_line | default "" -}}

@@ -9,7 +9,7 @@
        Args (dict):
          name  — card name (required)
          set   — set code (optional)
-       Returns: unmarshalled card data, or false on failure. */ -}}
+       Returns: dict with card data and an error message. */ -}}
 
 {{- $name := .name -}}
 {{- $set := .set -}}
@@ -21,11 +21,22 @@
 -}}
 
 {{- $data := false -}}
+{{- $fetchErr := "" -}}
 {{- $opts := dict "headers" $headers "key" $url -}}
 {{- with try (resources.GetRemote $url $opts) -}}
-  {{- with .Value -}}
-    {{- $data = . | transform.Unmarshal -}}
+  {{- with .Err -}}
+    {{- $fetchErr = printf "%v" . -}}
+  {{- else with .Value -}}
+    {{- with try (transform.Unmarshal .) -}}
+      {{- with .Err -}}
+        {{- $fetchErr = printf "could not parse Scryfall JSON: %v" . -}}
+      {{- else with .Value -}}
+        {{- $data = . -}}
+      {{- end -}}
+    {{- end -}}
+  {{- else -}}
+    {{- $fetchErr = "Scryfall returned no resource (HTTP 404 or empty response)" -}}
   {{- end -}}
 {{- end -}}
 
-{{- return $data -}}
+{{- return (dict "card" $data "error" $fetchErr) -}}
