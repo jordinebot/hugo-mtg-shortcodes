@@ -23,15 +23,15 @@
 {{- $labelCard := i18n "mtg_deck_card" | default "Card" -}}
 
 {{- $sectionDefs := slice
-  (dict "key" "creatures" "label" (i18n "mtg_deck_creature" | default "Creature") "chart" "#46E59D")
-  (dict "key" "planeswalkers" "label" (i18n "mtg_deck_planeswalker" | default "Planeswalker") "chart" "#4E46E5")
-  (dict "key" "instants" "label" (i18n "mtg_deck_instant" | default "Instant") "chart" "#468FE5")
-  (dict "key" "sorceries" "label" (i18n "mtg_deck_sorcery" | default "Sorcery") "chart" "#8E46E5")
-  (dict "key" "artifacts" "label" (i18n "mtg_deck_artifact" | default "Artifact") "chart" "#46DDE5")
-  (dict "key" "enchantments" "label" (i18n "mtg_deck_enchantment" | default "Enchantment") "chart" "#E5468E")
-  (dict "key" "battles" "label" (i18n "mtg_deck_battle" | default "Battle") "chart" "#E54E46")
-  (dict "key" "lands" "label" (i18n "mtg_deck_land" | default "Land") "chart" "#DDE546")
-  (dict "key" "other" "label" (i18n "mtg_deck_other" | default "Other") "chart" "#9DE546")
+  (dict "key" "creatures" "label" "Creature" "chart" "#46E59D")
+  (dict "key" "planeswalkers" "label" "Planeswalker" "chart" "#4E46E5")
+  (dict "key" "instants" "label" "Instant" "chart" "#468FE5")
+  (dict "key" "sorceries" "label" "Sorcery" "chart" "#8E46E5")
+  (dict "key" "artifacts" "label" "Artifact" "chart" "#46DDE5")
+  (dict "key" "enchantments" "label" "Enchantment" "chart" "#E5468E")
+  (dict "key" "battles" "label" "Battle" "chart" "#E54E46")
+  (dict "key" "lands" "label" "Land" "chart" "#DDE546")
+  (dict "key" "other" "label" "Other" "chart" "#9DE546")
 -}}
 
 {{- $sections := slice -}}
@@ -157,7 +157,7 @@
   {{- end -}}
 {{- end -}}
 {{- if gt $sideboardCount 0 -}}
-  {{- $sections = $sections | append (dict "label" (i18n "mtg_deck_sideboard" | default "Sideboard") "cards" $sideboardCards "count" $sideboardCount) -}}
+  {{- $sections = $sections | append (dict "label" "Sideboard" "cards" $sideboardCards "count" $sideboardCount) -}}
 {{- end -}}
 
 <aside class="deck-preview" id="deck-{{ $id | urlize }}">

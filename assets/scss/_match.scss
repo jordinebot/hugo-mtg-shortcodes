@@ -35,7 +35,7 @@
 
 .match__sides {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 1rem;
 }
 
@@ -60,7 +60,3 @@
   a { color: inherit; }
 }
 
-@media (max-width: 480px) {
-  .match__sides { grid-template-columns: 1fr; }
-  .match__side--player2 { text-align: left; }
-}
