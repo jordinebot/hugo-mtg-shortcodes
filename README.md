@@ -18,12 +18,12 @@ A standalone Hugo Module that ships **Magic: The Gathering shortcodes** — inli
 - **`draft`** — draft-summary callout with draft index, set code (linked to Scryfall), deck colours, winrate, and match record.
 - **`season`** — season summary with ranks, draft record, win rate, and Arena currency balances.
 
-Card-backed shortcodes use the [Scryfall API](https://scryfall.com/docs/api) (via `resources.GetRemote`) and are cached at build time, so subsequent builds don't re-hit the network for cards you've already referenced.
+Card-backed shortcodes read a local index prepared from [Scryfall bulk data](https://scryfall.com/docs/api/bulk-data). Run the preparation step below before Hugo.
 
 ## Requirements
 
 - Hugo **extended** ≥ 0.128
-- Internet access at build time (for Scryfall lookups — results are cached after the first fetch)
+- Python 3.9+ and internet access to prepare the initial bulk snapshot; subsequent builds can use the cached snapshot offline.
 - A Hugo theme that exposes CSS custom properties for `--color-accent`, `--color-text`, `--color-text-muted`, `--color-border`, `--color-accent-hover`, `--font-display` (or a theme-side adapter — see "Theming" below)
 
 ## Installation
@@ -142,7 +142,7 @@ Full card preview with image, name (linked to Scryfall), and type line:
 {{</* card "Hymn to Tourach|fem" */>}} {{/* pin to a specific printing */}}
 ```
 
-Use `|<set-code>` to lock the printing (otherwise Scryfall picks its default). For double-faced cards, a flip button appears in the corner of the card art.
+Use `|<set-code>` to lock the printing (otherwise the local index selects a printing). For double-faced cards, a flip button appears in the corner of the card art.
 
 ### `cardname`
 
@@ -308,3 +308,43 @@ If you found this module useful and want to support my work, you can buy me a co
 ## License
 
 [MIT](LICENSE).
+
+## Offline Scryfall data (required before building)
+
+Install Python 3.9+ and prepare a local index before running Hugo:
+
+```sh
+python3 ../hugo-mtg-shortcodes/scripts/prepare-scryfall.py --output data/scryfall.json
+hugo
+```
+
+Bolt the Bird and Leyline run this automatically through `npm run build` and
+`npm run serve`; their Actions workflows prepare and cache the index as well.
+Ignore the generated `data/scryfall.json` in Git. Restart the preparation command
+to refresh data during a long-running development server session.
+
+The script uses Default Cards to retain set-specific printings, face names and
+alternate flavor names. It supports compressed JSONL and the legacy JSON array.
+The processed snapshot lives in `~/.cache/hugo-mtg-scryfall-v1`, shared by local
+sites. GitHub caches are separate per repository. Fresh snapshots are reused for
+24 hours without network access. After that, one metadata request checks for an
+update; only changed data is downloaded. `--refresh` forces rebuilding and
+`--cache-dir PATH` (or `SCRYFALL_CACHE_DIR`) selects another cache directory.
+
+On HTTP errors (including 429), preparation reports the status and response body,
+does not retry, and uses the last valid snapshot with a warning. Without a valid
+snapshot it fails before Hugo starts. Snapshot writes are atomic. Hugo itself
+never requests the card API; card images still load from Scryfall in the browser.
+
+Lookups use exact names (case-insensitive, trimmed), including individual face
+names. Correct misspellings previously accepted by fuzzy API searches. A missing
+name or set produces a warning with the lookup key and snapshot date; there is no
+online fallback. Without a set, selection prefers English, paper, non-promo
+printings, then the newest release with a stable ID tie-break. This can select
+different artwork than the API; use `|set-code` to select a set explicitly.
+
+Run offline regression tests with:
+
+```sh
+python3 -m unittest discover -s tests
+```

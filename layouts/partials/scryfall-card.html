@@ -1,42 +1,18 @@
-{{- /* Fetch a Scryfall card by fuzzy name.
-
-       Use a stable cache key so repeated references to the same card share
-       one cached response. resources.GetRemote handles transient HTTP
-       failures with backoff (including Scryfall's Retry-After on 429s in
-       the Hugo version used by the site), so template-level immediate
-       retries would only add duplicate traffic.
-
-       Args (dict):
-         name  — card name (required)
-         set   — set code (optional)
-       Returns: dict with card data and an error message. */ -}}
-
-{{- $name := .name -}}
-{{- $set := .set -}}
-{{- $url := printf "https://api.scryfall.com/cards/named?fuzzy=%s" ($name | urlquery) -}}
-{{- if $set -}}{{- $url = printf "%s&set=%s" $url ($set | urlquery) -}}{{- end -}}
-{{- $headers := dict
-  "User-Agent" "hugo-mtg-shortcodes (+https://github.com/jordinebot/hugo-mtg-shortcodes)"
-  "Accept" "application/json"
--}}
-
-{{- $data := false -}}
-{{- $fetchErr := "" -}}
-{{- $opts := dict "headers" $headers "key" $url -}}
-{{- with try (resources.GetRemote $url $opts) -}}
-  {{- with .Err -}}
-    {{- $fetchErr = printf "%v" . -}}
-  {{- else with .Value -}}
-    {{- with try (transform.Unmarshal .) -}}
-      {{- with .Err -}}
-        {{- $fetchErr = printf "could not parse Scryfall JSON: %v" . -}}
-      {{- else with .Value -}}
-        {{- $data = . -}}
-      {{- end -}}
-    {{- end -}}
-  {{- else -}}
-    {{- $fetchErr = "Scryfall returned no resource (HTTP 404 or empty response)" -}}
-  {{- end -}}
+{{- /* Offline lookup. Run scripts/prepare-scryfall.py before Hugo. */ -}}
+{{- $index := hugo.Data.scryfall -}}
+{{- if not $index -}}
+  {{- errorf "Missing Scryfall bulk index: run prepare-scryfall.py --output data/scryfall.json before Hugo (or npm run build/serve in the example sites)." -}}
 {{- end -}}
-
-{{- return (dict "card" $data "error" $fetchErr) -}}
+{{- $key := .name | strings.TrimSpace | lower -}}
+{{- with .set -}}
+  {{- $key = printf "%s|%s" $key (. | strings.TrimSpace | lower) -}}
+{{- end -}}
+{{- $card := false -}}
+{{- with index $index.names $key -}}
+  {{- $card = index $index.cards . -}}
+{{- end -}}
+{{- $error := "" -}}
+{{- if not $card -}}
+  {{- $error = printf "not found in Scryfall bulk snapshot (%s): %s; check the exact card name and set code, or refresh the snapshot" $index.updated_at $key -}}
+{{- end -}}
+{{- return (dict "card" $card "error" $error) -}}

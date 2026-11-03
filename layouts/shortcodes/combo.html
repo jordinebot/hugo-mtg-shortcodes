@@ -14,7 +14,7 @@
     {{- $result := partial "scryfall-card.html" (dict "name" $item.name "set" $item.set) -}}
     {{- $data := $result.card -}}
     {{- if not $data -}}
-      {{- warnf "combo shortcode: failed to fetch %q after Hugo's HTTP retries: %s" $item.name $result.error -}}
+      {{- warnf "combo shortcode: failed to resolve %q: %s" $item.name $result.error -}}
       <span class="card-error">[card lookup failed: {{ $item.name }}]</span>
     {{- else -}}
       {{- $img := "" -}}
