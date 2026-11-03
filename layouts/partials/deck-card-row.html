@@ -23,7 +23,7 @@
     {{- end -}}
   {{- end -}}
 {{- else -}}
-  {{- warnf "deck shortcode: failed to fetch %q after retries" $name -}}
+  {{- warnf "deck shortcode: failed to fetch %q after Hugo's HTTP retries" $name -}}
 {{- end -}}
 
 <li class="deck-preview__card">

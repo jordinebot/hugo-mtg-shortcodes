@@ -10,7 +10,7 @@
 {{- $data := partial "scryfall-card.html" (dict "name" $name "set" $set) -}}
 
 {{- if not $data -}}
-  {{- warnf "card shortcode: failed to fetch %q after retries" $name -}}
+  {{- warnf "card shortcode: failed to fetch %q after Hugo's HTTP retries" $name -}}
   <span class="card-error">[card lookup failed: {{ $name }}]</span>
 {{- else -}}
   {{- $isDFC := and $data.card_faces (not $data.image_uris) -}}
