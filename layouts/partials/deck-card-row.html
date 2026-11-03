@@ -4,8 +4,9 @@
 {{- $qty := $card.qty | default 1 | int -}}
 {{- $set := $card.set | default "" -}}
 {{- $data := false -}}
+{{- $result := dict "card" false "error" "no card name provided" -}}
 {{- if $name -}}
-  {{- $result := partial "scryfall-card.html" (dict "name" $name "set" $set) -}}
+  {{- $result = partial "scryfall-card.html" (dict "name" $name "set" $set) -}}
   {{- $data = $result.card -}}
 {{- end -}}
 
