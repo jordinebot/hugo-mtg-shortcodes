@@ -12,7 +12,7 @@ import time
 import urllib.error
 import urllib.request
 
-SCHEMA = 2
+SCHEMA = 3
 HEADERS = {'User-Agent': 'hugo-mtg-shortcodes (+https://github.com/jordinebot/hugo-mtg-shortcodes)', 'Accept': 'application/json'}
 FIELDS = ('name', 'scryfall_uri', 'image_uris', 'card_faces', 'mana_cost', 'cmc', 'colors', 'type_line', 'set')
 
@@ -64,18 +64,22 @@ def build_index(cards):
 
 
 def apply_oracle(index, cards):
-    """Override only unqualified canonical/face names, preserving set and flavor aliases."""
-    count = 0
-    for card in cards:
-        if card.get('object') != 'card':
-            continue
-        count += 1
-        index['cards'][card['id']] = {k: card[k] for k in FIELDS if k in card}
-        for name in {card['name'], *(face['name'] for face in card.get('card_faces', []))}:
-            index['names'][key(name)] = card['id']
-    if not count:
+    """Use Oracle selections, preferring a card's own name over a matching face."""
+    oracle = [card for card in cards if card.get('object') == 'card']
+    if not oracle:
         raise ValueError('Oracle bulk file contains no cards')
-    # Drop printings no longer referenced after applying Oracle selections.
+    for card in oracle:
+        index['cards'][card['id']] = {k: card[k] for k in FIELDS if k in card}
+    # Exact card names must win over face names (e.g. Lightning Bolt).
+    for card in oracle:
+        index['names'][key(card['name'])] = card['id']
+    for card in oracle:
+        for face in card.get('card_faces', []):
+            index['names'].setdefault(key(face['name']), card['id'])
+    # Keep alternate flavor names from Default Cards unless they collide with
+    # one of the canonical Oracle names above.
+    oracle_names = {key(card['name']) for card in oracle}
+    oracle_names.update(key(face['name']) for card in oracle for face in card.get('card_faces', []))
     used = set(index['names'].values())
     index['cards'] = {id: card for id, card in index['cards'].items() if id in used}
 

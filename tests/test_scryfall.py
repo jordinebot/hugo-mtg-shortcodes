@@ -54,16 +54,21 @@ class BulkTests(unittest.TestCase):
                 bulk.prepare(path)
             self.assertEqual(json.loads((path / 'index.json').read_text()), data)
 
-    def test_oracle_overrides_defaults_but_preserves_sets_and_flavors(self):
+    def test_oracle_overrides_defaults_preserves_aliases_and_prefers_exact_name(self):
         old, new = card('old', set='apc'), card('new')
         new['flavor_name'] = 'Alternate Name'
         index = bulk.build_index([old, new])
-        bulk.apply_oracle(index, [old])
+        exact = card('exact', name='Lightning Bolt')
+        face = card('face', name='Other Card')
+        face['card_faces'] = [{'name': 'Lightning Bolt'}, {'name': 'Other Face'}]
+        bulk.apply_oracle(index, [old, exact, face])
         self.assertEqual(index['names']['fire // ice'], 'old')
         self.assertEqual(index['names']['ice'], 'old')
         self.assertEqual(index['names']['fire|mh2'], 'new')
         self.assertEqual(index['names']['alternate name'], 'new')
         self.assertEqual(index['names']['alternate name|mh2'], 'new')
+        self.assertEqual(index['names']['lightning bolt'], 'exact')
+        self.assertEqual(index['names']['other face'], 'face')
         with self.assertRaises(ValueError):
             bulk.apply_oracle(index, [])
 
