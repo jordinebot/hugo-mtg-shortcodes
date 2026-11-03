@@ -17,6 +17,10 @@ def card(id, name='Fire // Ice', set='mh2', date='2021-01-01'):
                 lang='en', games=['paper'], card_faces=[{'name': 'Fire'}, {'name': 'Ice'}])
 
 
+def manifest(metadata):
+    return {'data': [dict(metadata, type=kind) for kind in ('default_cards', 'oracle_cards')]}
+
+
 class BulkTests(unittest.TestCase):
     def test_printings_faces_and_order(self):
         cards = [card('old', set='apc', date='2001-01-01'), card('new')]
@@ -36,7 +40,7 @@ class BulkTests(unittest.TestCase):
                             'jsonl_download_uri' if jsonl else 'download_uri':
                             'https://example.com/cards.jsonl.gz' if jsonl else 'https://example.com/cards.json'}
                 payload = gzip.compress((json.dumps(special) + '\n').encode()) if jsonl else json.dumps([special]).encode()
-                with patch.object(bulk, 'request', side_effect=[io.BytesIO(json.dumps(metadata).encode()), io.BytesIO(payload)]):
+                with patch.object(bulk, 'request', side_effect=[io.BytesIO(json.dumps(manifest(metadata)).encode()), io.BytesIO(payload), io.BytesIO(payload)]):
                     snapshot = bulk.prepare(Path(tmp))
                 self.assertEqual(json.loads(snapshot.read_text())['names']['alternate name'], 'skin')
 
@@ -46,7 +50,43 @@ class BulkTests(unittest.TestCase):
             data = bulk.build_index([card('old')])
             bulk.atomic_json(path / 'index.json', data)
             metadata = {'updated_at': 'new', 'download_uri': 'https://example.com/cards.json'}
-            with patch.object(bulk, 'request', side_effect=[io.BytesIO(json.dumps(metadata).encode()), io.BytesIO(b'invalid')]):
+            with patch.object(bulk, 'request', side_effect=[io.BytesIO(json.dumps(manifest(metadata)).encode()), io.BytesIO(b'invalid')]):
+                bulk.prepare(path)
+            self.assertEqual(json.loads((path / 'index.json').read_text()), data)
+
+    def test_oracle_overrides_defaults_but_preserves_sets_and_flavors(self):
+        old, new = card('old', set='apc'), card('new')
+        new['flavor_name'] = 'Alternate Name'
+        index = bulk.build_index([old, new])
+        bulk.apply_oracle(index, [old])
+        self.assertEqual(index['names']['fire // ice'], 'old')
+        self.assertEqual(index['names']['ice'], 'old')
+        self.assertEqual(index['names']['fire|mh2'], 'new')
+        self.assertEqual(index['names']['alternate name'], 'new')
+        self.assertEqual(index['names']['alternate name|mh2'], 'new')
+        with self.assertRaises(ValueError):
+            bulk.apply_oracle(index, [])
+
+    def test_old_schema_refreshes_and_survives_network_failure(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            path = Path(tmp)
+            data = bulk.build_index([card('a')])
+            data.update(schema=1, checked_at=bulk.time.time())
+            bulk.atomic_json(path / 'index.json', data)
+            with patch.object(bulk, 'request', side_effect=RuntimeError('HTTP 429')) as request:
+                bulk.prepare(path)
+                self.assertEqual(request.call_count, 1)
+            self.assertEqual(json.loads((path / 'index.json').read_text()), data)
+
+    def test_oracle_failure_does_not_publish_partial_update(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            path = Path(tmp)
+            data = bulk.build_index([card('old')])
+            bulk.atomic_json(path / 'index.json', data)
+            metadata = {'updated_at': 'new', 'download_uri': 'https://example.com/cards.json'}
+            with patch.object(bulk, 'request', side_effect=[
+                    io.BytesIO(json.dumps(manifest(metadata)).encode()),
+                    io.BytesIO(json.dumps([card('new')]).encode()), RuntimeError('HTTP 429')]):
                 bulk.prepare(path)
             self.assertEqual(json.loads((path / 'index.json').read_text()), data)
 

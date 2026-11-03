@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Prepare offline Hugo data from Scryfall Default Cards (Python stdlib only)."""
+"""Prepare offline Hugo data from Scryfall Default and Oracle Cards (Python stdlib only)."""
 import argparse
 import gzip
 import json
@@ -12,7 +12,7 @@ import time
 import urllib.error
 import urllib.request
 
-SCHEMA = 1
+SCHEMA = 2
 HEADERS = {'User-Agent': 'hugo-mtg-shortcodes (+https://github.com/jordinebot/hugo-mtg-shortcodes)', 'Accept': 'application/json'}
 FIELDS = ('name', 'scryfall_uri', 'image_uris', 'card_faces', 'mana_cost', 'cmc', 'colors', 'type_line', 'set')
 
@@ -63,41 +63,60 @@ def build_index(cards):
     return {'schema': SCHEMA, 'cards': records, 'names': {name: card['id'] for name, card in selected.items()}}
 
 
+def apply_oracle(index, cards):
+    """Override only unqualified canonical/face names, preserving set and flavor aliases."""
+    count = 0
+    for card in cards:
+        if card.get('object') != 'card':
+            continue
+        count += 1
+        index['cards'][card['id']] = {k: card[k] for k in FIELDS if k in card}
+        for name in {card['name'], *(face['name'] for face in card.get('card_faces', []))}:
+            index['names'][key(name)] = card['id']
+    if not count:
+        raise ValueError('Oracle bulk file contains no cards')
+    # Drop printings no longer referenced after applying Oracle selections.
+    used = set(index['names'].values())
+    index['cards'] = {id: card for id, card in index['cards'].items() if id in used}
+
+
+def download_cards(metadata):
+    url = metadata.get('jsonl_download_uri') or metadata['download_uri']
+    with tempfile.TemporaryFile() as download:
+        print(f'Downloading Scryfall {metadata.get("type", "bulk")}: {url}', flush=True)
+        with request(url) as response:
+            shutil.copyfileobj(response, download)
+        download.seek(0)
+        stream = gzip.GzipFile(fileobj=download) if url.endswith('.gz') else download
+        if metadata.get('jsonl_download_uri'):
+            yield from (json.loads(line) for line in stream if line.strip())
+        else:
+            yield from json.load(stream)
+
+
 def prepare(cache, refresh=False):
     snapshot = cache / 'index.json'
     cached = None
     try:
         cached = json.loads(snapshot.read_text())
-        if cached['schema'] != SCHEMA or not cached['cards'] or not cached['names']:
+        if cached['schema'] not in (1, SCHEMA) or not cached['cards'] or not cached['names']:
             cached = None
     except (OSError, ValueError, KeyError, TypeError):
         pass
-    if cached and not refresh and time.time() - cached.get('checked_at', 0) < 86400:
+    if cached and cached['schema'] == SCHEMA and not refresh and time.time() - cached.get('checked_at', 0) < 86400:
         return snapshot
     try:
-        with request('https://api.scryfall.com/bulk-data/default_cards') as response:
-            metadata = json.load(response)
-        if cached and not refresh and cached.get('updated_at') == metadata['updated_at']:
+        with request('https://api.scryfall.com/bulk-data') as response:
+            manifest = json.load(response)
+        datasets = {item['type']: item for item in manifest['data']}
+        versions = {kind: datasets[kind]['updated_at'] for kind in ('default_cards', 'oracle_cards')}
+        if cached and cached['schema'] == SCHEMA and not refresh and cached.get('versions') == versions:
             cached['checked_at'] = time.time()
             atomic_json(snapshot, cached)
             return snapshot
-        url = metadata.get('jsonl_download_uri') or metadata['download_uri']
-        cache.mkdir(parents=True, exist_ok=True)
-        with tempfile.TemporaryFile() as download:
-            print(f'Downloading Scryfall Default Cards: {url}', flush=True)
-            with request(url) as response:
-                shutil.copyfileobj(response, download)
-            download.seek(0)
-            if url.endswith('.gz'):
-                stream = gzip.GzipFile(fileobj=download)
-            else:
-                stream = download
-            if metadata.get('jsonl_download_uri'):
-                cards = (json.loads(line) for line in stream if line.strip())
-            else:
-                cards = json.load(stream)
-            index = build_index(cards)
-        index.update(updated_at=metadata['updated_at'], checked_at=time.time())
+        index = build_index(download_cards(datasets['default_cards']))
+        apply_oracle(index, download_cards(datasets['oracle_cards']))
+        index.update(updated_at=versions['default_cards'], versions=versions, checked_at=time.time())
         atomic_json(snapshot, index)
     except (OSError, EOFError, ValueError, KeyError, RuntimeError) as exc:
         if not cached:

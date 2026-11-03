@@ -323,12 +323,15 @@ Bolt the Bird and Leyline run this automatically through `npm run build` and
 Ignore the generated `data/scryfall.json` in Git. Restart the preparation command
 to refresh data during a long-running development server session.
 
-The script uses Default Cards to retain set-specific printings, face names and
-alternate flavor names. It supports compressed JSONL and the legacy JSON array.
-The processed snapshot lives in `~/.cache/hugo-mtg-scryfall-v1`, shared by local
+The script combines Default Cards (for set-specific printings, face names and
+alternate flavor names) with Oracle Cards (for Scryfall’s recognizable default
+printing for each card). Unqualified names use Oracle Cards; `|set-code` lookups
+continue to use the requested printing from Default Cards. The parser supports
+compressed JSONL and the legacy JSON array. The processed snapshot lives in `~/.cache/hugo-mtg-scryfall-v1`, shared by local
 sites. GitHub caches are separate per repository. Fresh snapshots are reused for
 24 hours without network access. After that, one metadata request checks for an
-update; only changed data is downloaded. `--refresh` forces rebuilding and
+update; the manifest checks both bulk files together, and unchanged files do not
+need downloading. `--refresh` forces rebuilding and
 `--cache-dir PATH` (or `SCRYFALL_CACHE_DIR`) selects another cache directory.
 
 On HTTP errors (including 429), preparation reports the status and response body,
@@ -339,9 +342,8 @@ never requests the card API; card images still load from Scryfall in the browser
 Lookups use exact names (case-insensitive, trimmed), including individual face
 names. Correct misspellings previously accepted by fuzzy API searches. A missing
 name or set produces a warning with the lookup key and snapshot date; there is no
-online fallback. Without a set, selection prefers English, paper, non-promo
-printings, then the newest release with a stable ID tie-break. This can select
-different artwork than the API; use `|set-code` to select a set explicitly.
+online fallback. Without a set, the default display printing follows Scryfall’s Oracle Cards
+selection. Use `|set-code` to select a set explicitly.
 
 Run offline regression tests with:
 
