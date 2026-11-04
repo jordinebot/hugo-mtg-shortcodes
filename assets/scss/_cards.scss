@@ -220,10 +220,9 @@
   text-decoration-style: dotted;
   text-decoration-thickness: 1px;
   text-underline-offset: 3px;
-  color: var(--color-accent, #6c5ce7);
+  color: var(--color-text, currentColor);
 
   &:hover {
-    color: var(--color-accent-hover, var(--color-accent, #6c5ce7));
     text-decoration-style: solid;
   }
 }
